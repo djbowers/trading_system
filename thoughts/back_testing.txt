@@ -1,0 +1,5 @@
+Notes about back testing:
+
+Start with BTC-USD and expand. 
+Get all history of coin in table and run against a func that would play period by period (1 minute) and simulate what would have happened
+if this strategy was employed. Results should be graphically shown on chart as layer on top of asset candles. 

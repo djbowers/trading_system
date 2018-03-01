@@ -1,0 +1,95 @@
+This is an overview of the Trading Bot and its functions:
+
+*Note: The algorithm used to identify market positions must be back-tested to ensure success. See back_testing.txt
+
+There are many pieces to this bot but the end result is simple:
+	1. A system that uses price history data of an asset to identify entry points for market postitions.  
+	2. Once a position is established a stop is placed. 
+	3. Positions can be both long (buy) and short (sell). 
+	4. Active positions are managed by the minute to identify closed positions or to adjust stops as market goes in a favorable direction. 
+	5. Report all activity for review. 
+	6. Have an interface to see where all positions are for us mortals. 
+ 
+1. Establish Position
+	a. Identify Entry Points
+		Use an algorithm to watch for entry triggers:
+			primary: If price goes above (or below) 24 hour high (or low), buy (or short) asset 1 unit.
+			pyramid: If price is XN (X = multiple up to 5, N = 1 ATR) above (or below), an additional unit is purchased.
+	b. Position Size
+		unit = 2% of total equity (including active positions)
+		contract_risk = $(2N stop)
+		position_size = round_down(unit/contract_risk)
+		number_of_units_to_buy = position_size
+
+		*Note: If total equity down more than 10%, reduce unit size by 20%
+	c. Log Activity
+		Enter Trade Data: 
+			- Trade ID
+			- Long or Short
+			- Date Entered
+			- Asset Price (in USD)
+			- Position Value (in USD)
+			- Position Value %
+			- Contract Risk (2N Stop $)
+
+2. Exit Signals
+	Primary: If price goes below (or above) 12 hour low (or high)
+	secondary: 2N stop
+	pyramid: As price goes in favorable direction, all stops are moved to top position (current 12 hour low (or high) or 2N stop)
+	
+	Log Activity:
+		- Current Stop $ amt
+		- Date Stop added
+
+	*Note: All open positions MUST have an active stop
+
+3. Long or Short
+	The triggers are effective both up or down in price.
+
+4. Manage Open Positions
+	Every minute a program is ran to watch for price to move in favorable direction. If it does, all active stops are moved in that direction by N.
+	Ensure every active position has a stop.
+	
+	Log Activity:
+		- Current Stop $ amt
+		- Date Stop added
+
+5. Report
+	5a. All Open postitions:
+		- Trade ID
+		- Long or Short
+		- Date Entered
+		- Asset Price (in USD)
+		- Position Value (in USD)
+		- Position Value %
+		- Contract Risk (2N Stop $)
+		- Profit or Loss %
+		- Profit or Loss $
+		- Current Stop $
+		- Date Stop Added
+
+	5b. All Past Positions:
+		- Trade ID
+		- Long or Short
+		- Entered Position Value (in USD)
+		- Entered Position Value %
+		- Exited Position Value (in USD)
+		- Exited Position Value %
+		- Date Exited
+		- Profit or Loss %
+		- Profit or Loss $
+
+	5c. P&L (by period)
+		- Starting Equity
+		- Current Gain or Loss $
+		- Curren tGain or Loss %
+		- Total Portfolio Balance
+		- Total # of Trades
+		- Total # of Winning Trades
+		- Average $/Win
+		- Total # of Losing Trades
+		- Average $/Loss
+
+MSC NOTES:
+	Filters:
+		- Maybe: If last trade was profitable, skip attempt (add buy trigger with larger window (1 week high) to catch larger trends)

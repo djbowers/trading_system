@@ -1,0 +1,11 @@
+The systems I was planning on using:
+
+database:
+	aws RDS (mySQL)
+proccessing:
+	aws EC2 (aws linux or ubuntu)
+
+
+ p.s. Not really sure what else we would need
+
+
