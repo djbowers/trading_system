@@ -93,3 +93,6 @@ There are many pieces to this bot but the end result is simple:
 MSC NOTES:
 	Filters:
 		- Maybe: If last trade was profitable, skip attempt (add buy trigger with larger window (1 week high) to catch larger trends)
+	Algorithm:
+		- Maybe: look to see if Moving averages usage can show effective trend
+			swings.

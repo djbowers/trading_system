@@ -1,0 +1,24 @@
+Notes about back testing:
+
+- start with BTC-USD and expand.
+- get all history of coin in table 
+- use  play period by period (1 minute) and simulate what would have happened
+if this strategy was employed. Results should be graphically shown on chart as layer on top of asset candles. 
+
+-show results as chart with colors indicating P & L 
+
+-Try to see if common events occur to filter some triggers
+
+
+------------------------------
+Back Testing Dev Steps:
+
+	1. conncet to Gdax API
+	2. connect to SQL DB
+3. update SQL DB with BTC-USD price history candles (ganularity = 1 minute candles)
+4. structure tables
+5. create algorithm func to run testing on
+6. create reporting system to show results/effectiveness of stratedgy
+7. test running code on aws EC2
+8. setup trial run for 1 week to ensure no major errors occur
+9. launch

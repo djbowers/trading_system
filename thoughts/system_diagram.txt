@@ -42,6 +42,14 @@ program diagram:
 -----------------
 database tables:
 	ASSET_PRICE_TABLE
+		- current price (in USD)
+		- candle_dict
+		- N (ATR)
+		- 24 hr % change
+		- 24 hr $ change
+		- maybe: MA, DEMA, TEMA
+		
 	OPEN_POSITION_TABLE
+
 	CLOSED_POSITION_TABLE
 	
