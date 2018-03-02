@@ -1,0 +1,47 @@
+
+program diagram:
+
+# run every minute
+
+- def update_db(api_data, SQL_db):
+	get exchange API data
+		1 minute sized candles
+	process data into dict
+		get factors to track (N (ATR), TEMA,  etc...) add to dict
+	update SQL with new dict
+		add items to ASSET_PRICE_TABLE
+
+- def looking_to_buy(api_data, SQL_db):
+	'''
+	- for backtesting, use SQL_db with different range
+	than normgal (today = Jan 1 2015 12:00 am).
+	- no orders will actually be placed
+	- log_activity will reset on demand
+	'''
+
+	look in ASSET_PRICE_TABLE for buy signals
+	if buy == True:
+		calculate stop amt
+		use api_data to put in buy order and stop order
+		log_activity in OPEN_POSITION_TABLE
+
+- def position_manager(api_data, SQL_db):
+	ensure all positions have stops
+	watch for signal to move stops
+		move stops on open positions
+		los_activity in CLOSED_POSITION_TABLE
+	look for exited positions
+		if open position is no longer open in API
+		log_activity in CLOSED_POSITION_TABLE
+
+- def report(SQL_db):
+	get open positions
+	get closed positions
+	get p&L
+
+-----------------
+database tables:
+	ASSET_PRICE_TABLE
+	OPEN_POSITION_TABLE
+	CLOSED_POSITION_TABLE
+	
