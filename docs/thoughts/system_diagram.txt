@@ -14,7 +14,7 @@ program diagram:
 - def looking_to_buy(api_data, SQL_db):
 	'''
 	- for backtesting, use SQL_db with different range
-	than normgal (today = Jan 1 2015 12:00 am).
+	than normal (today = Jan 1 2015 12:00 am).
 	- no orders will actually be placed
 	- log_activity will reset on demand
 	'''
@@ -48,8 +48,7 @@ database tables:
 		- 24 hr % change
 		- 24 hr $ change
 		- maybe: MA, DEMA, TEMA
-		
+
 	OPEN_POSITION_TABLE
 
 	CLOSED_POSITION_TABLE
-	

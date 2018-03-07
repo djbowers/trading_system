@@ -1,0 +1,21 @@
+Back Testing Dev Steps:
+
+1. create Gdax interface
+  - connect to api
+  - make functions for getting data points
+
+2. connect to SQL DB
+  - connect to mySQL db
+  - make functions for interacting with db
+
+3. structure tables
+  - format table for gdax data
+
+4. update SQL DB with BTC-USD price history candles (ganularity = 1 minute candles)
+  - insert Gdax data into SQL table
+
+5. create algorithm func to run testing on
+6. create reporting system to show results/effectiveness of stratedgy
+7. test running code on aws EC2
+8. setup trial run for 1 week to ensure no major errors occur
+9. launch
