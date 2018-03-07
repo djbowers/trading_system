@@ -13,56 +13,253 @@ import json
 import email
 import smtplib
 import sys
-
-sys.path.append('/Users/JustinJacob/Desktop/Splash/ProgrammingDev/Projects/AJmStatus/Jobs')
-sys.path.append('/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/site-packages')
 import datetime
 import urllib.request
 import simplejson
 import locale
+import time
 import gdax, time
-# from pymongo import MongoClient
+import bitcoinaverage
+from bitcoinaverage.examples import history
+# from bitcoinaverage import history
 
 
 
-
-public_client = gdax.PublicClient()
-
-
-public_client.get_products()
-# Get the order book at the default level.
-public_client.get_product_order_book('BTC-USD')
-# Get the order book at a specific level.
-public_client.get_product_order_book('BTC-USD', level=1)
-# Get the product ticker for a specific product.
-ticker = public_client.get_product_ticker(product_id='BTC-USD')
-# Get the product trades for a specific product.
-public_client.get_product_trades(product_id='ETH-USD')
-# Get historic rates
-history_db = public_client.get_product_historic_rates('BTC-USD')
-# To include other parameters, see function docstring:
-public_client.get_product_historic_rates('ETH-USD', granularity=3000)
-# Get 24 hours stats
-public_client.get_product_24hr_stats('ETH-USD')
-# Get currencies
-public_client.get_currencies()
-# Get time
-public_client.get_time()
-
-# def datetime_to_iso8601(date):
-#     return '{year}-{month:02d}-{day:02d}T{hour:02d}:{minute:02d}:{second:02d}'.format(
-#       year=date.year,
-#       month=date.month,
-#       day=date.day,
-#       hour=date.hour,
-#       minute=date.minute,
-#       second=date.second)
 
 #
-# # hey()
+#
+#
+# import hashlib
+# import hmac
+# import requests
+# import time
+#
+# secret_key = 'Yjg1OWZjMzFmM2Q5NGUxZjgyM2FiMWJmMGIwMTM5MDY1ZDgzOWQwYWQ1YTY0NzhjOWNlOGNjYWYxMzgwMGIyNw'
+# public_key = 'ZjQyZmQxM2NkOGQ4NGMxZDg2NmZlOTlmNWM2ZmE1OTY'
+# timestamp = int(time.time())
+# payload = '{}.{}'.format(timestamp, public_key)
+# hex_hash = hmac.new(secret_key.encode(), msg=payload.encode(), digestmod=hashlib.sha256).hexdigest()
+# signature = '{}.{}'.format(payload, hex_hash)
+#
+# # symbol_set = 'global'
+
+#
+# # url = 'https://apiv2.bitcoinaverage.com/indices/{symbol_set}/history/{symbol}?period={period}&format={format}'
+# url = 'https://apiv2.bitcoinaverage.com/indices/global/history/BTCUSD?period=daily&format=json'
+# # url = 'https://apiv2.bitcoinaverage.com/indices/global/ticker/BTCUSD'
+# headers = {'X-Signature': signature}
+# result = requests.get(url=url, headers=headers)
+#
+# history_api_results = result.json()
+#
+# for i in history_api_results:
+#     print(i)
+# # print(result.json())
+
+
+
+
+
+
+# import gdax
+# import datetime
+
+
+def get_history(start, end):
+    """
+    inputs are dates as strings
+    formatted like "YYMMDDHHMM"
+    note: HH = 24-hour periods
+
+    Returns a dictionary of data from gdax. Max frames of 50
+    """
+    print('history start')
+    print(start)
+    print(end)
+
+
+    product = "{}-{}".format("BTC", "USD")
+    publicClient = gdax.PublicClient()
+
+    ## unit is granulatrity
+    unit = 60
+
+
+    end = datetime.datetime.strptime(end, '%y%m%d%H%M')
+    start = datetime.datetime.strptime(start, '%y%m%d%H%M')
+
+    hist = publicClient.get_product_historic_rates(
+                product,
+                start=start.isoformat(),
+                end=end.isoformat(),
+                granularity=unit)
+
+    if len(hist) == 1:
+        for r in range(1, 10, 1):
+            time.sleep(2)
+            hist = publicClient.get_product_historic_rates(
+                        product,
+                        start=start.isoformat(),
+                        end=end.isoformat(),
+                        granularity=unit)
+            if len(hist) > 1:
+                break
+
+    return hist
+    # print(datetime.datetime.fromtimestamp(int(hist[0][0])).isoformat())
+    # print(datetime.datetime.fromtimestamp(int(hist[-1][0])).isoformat())
+    # print(len(hist))
+
+def add_to_dict(history_dict, history_slice):
+
+    if len(history_slice) == 1:
+        print(history_slice)
+        # time.sleep(1)
+
+    ## look through desired
+    for period in history_slice:
+        readable_date = time.ctime(period[0])
+
+
+        period_datetime = datetime.datetime.strptime(readable_date, "%a %b %d %H:%M:%S %Y")
+        period_string = period_datetime.strftime('%y%m%d%H%M')
+
+
+        ## add info to dict
+        history_dict[period_string] = {'low': period[1],
+                                    'high': period[2],
+                                    'open': period[3],
+                                    'close': period[4],
+                                    'volume': period[5]}
+    return history_dict
+
+
+
+def main():
+    history_dict = {}
+
+    ## date format
+    ## YY MM DD HH MM
+    ## 18 03 02 00 00
+    start = 1802250501
+    end =   1802271001
+
+    # for i in range(1, 5, 1):
+
+    if (end - start) > 500:
+        print('more than 500!!')
+
+        diff = end-start
+        full_chunks = int(diff/500)
+        piece_start_datetime = datetime.datetime.strptime(str(start), '%y%m%d%H%M')
+        piece_end_datetime = piece_start_datetime + datetime.timedelta(minutes = 300)
+
+
+        # 350 minute  chunks
+        for l in range(1,full_chunks,1):
+            print(str(piece_end_datetime.strftime('%y%m%d%H%M')))
+
+            history_slice = get_history(str(piece_start_datetime.strftime('%y%m%d%H%M')), str(piece_end_datetime.strftime('%y%m%d%H%M')))
+
+            history_dict = add_to_dict(history_dict, history_slice)
+            piece_start_datetime = piece_start_datetime + datetime.timedelta(minutes = 350)
+            piece_end_datetime = piece_end_datetime + datetime.timedelta(minutes = 350)
+
+        piece_end = int(piece_end_datetime.strftime('%y%m%d%H%M'))
+
+        left_over = end - piece_end
+        piece_start += left_over
+        piece_end += left_over
+
+        history_slice = get_history(str(piece_start_datetime.strftime('%y%m%d%H%M')), str(piece_end_datetime.strftime('%y%m%d%H%M')))
+        history_dict = add_to_dict(history_dict, history_slice)
+
+    else:
+        history_slice = get_history(str(start), str(end))
+        history_dict = add_to_dict(history_dict, history_slice)
+
+
+        # time.sleep(1)
+
+
+
+    x = 0
+    ## history_dict is formatted dict ready to upload to SQL db
+    for p in sorted(history_dict):
+
+        print(str(p)+' low: '+str(history_dict[p]['low'])+'  high: '+str(history_dict[p]['high'])+'   open: '+str(history_dict[p]['open'])+'   close: '+str(history_dict[p]['close'])+'  vol: '+str(history_dict[p]['volume']))
+
+
+        x+=1
+        if x == 20:
+            sys.exit()
+
+
+
+if __name__ == '__main__':
+    main()
+
+
+
+
+
+
+
+## -----------------------------------
+##
+##      various gdax functions
+##
+## ------------------------------------
+# h1 = bitcoinaverage.restful_client.Restful_client()
+
+# restful_client.history_global
+#
+# sys.exit()
+#
+# public_client = gdax.PublicClient()
+#
+#
+# public_client.get_products()
+# # Get the order book at the default level.
+# public_client.get_product_order_book('BTC-USD')
+# # Get the order book at a specific level.
+# public_client.get_product_order_book('BTC-USD', level=1)
+# # Get the product ticker for a specific product.
+# ticker = public_client.get_product_ticker(product_id='BTC-USD')
+# # Get the product trades for a specific product.
+# public_client.get_product_trades(product_id='ETH-USD')
+# # Get historic rates
+# history_db = public_client.get_product_historic_rates('BTC-USD')
+# # To include other parameters, see function docstring:
+# public_client.get_product_historic_rates('ETH-USD', granularity=3000)
+# # Get 24 hours stats
+# public_client.get_product_24hr_stats('ETH-USD')
+# # Get currencies
+# public_client.get_currencies()
+# # Get time
+# public_client.get_time()
+#
+# # def datetime_to_iso8601(date):
+# #     return '{year}-{month:02d}-{day:02d}T{hour:02d}:{minute:02d}:{second:02d}'.format(
+# #       year=date.year,
+# #       month=date.month,
+# #       day=date.day,
+# #       hour=date.hour,
+# #       minute=date.minute,
+# #       second=date.second)
+#
+# #
 # # db = datetime_to_iso8601(datetime(2015, 1, 1),datetime(2016, 1, 1), 60 )
-# db = datetime_to_iso8601(datetime(2015, 1, 1))
-print('done')
+# # db = datetime_to_iso8601(datetime(2015, 1, 1))
+# print('done')
+#
+# history_db = public_client.get_product_historic_rates('BTC-USD')
+#
+# # print(history_db)
+#
+# for i in history_db:
+#     print(i)
+
 #
 #
 #
