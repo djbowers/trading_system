@@ -19,44 +19,7 @@ import simplejson
 import locale
 import time
 import gdax, time
-import bitcoinaverage
-from bitcoinaverage.examples import history
-# from bitcoinaverage import history
-
-
-
-
-#
-#
-#
-# import hashlib
-# import hmac
-# import requests
-# import time
-#
-# secret_key = 'Yjg1OWZjMzFmM2Q5NGUxZjgyM2FiMWJmMGIwMTM5MDY1ZDgzOWQwYWQ1YTY0NzhjOWNlOGNjYWYxMzgwMGIyNw'
-# public_key = 'ZjQyZmQxM2NkOGQ4NGMxZDg2NmZlOTlmNWM2ZmE1OTY'
-# timestamp = int(time.time())
-# payload = '{}.{}'.format(timestamp, public_key)
-# hex_hash = hmac.new(secret_key.encode(), msg=payload.encode(), digestmod=hashlib.sha256).hexdigest()
-# signature = '{}.{}'.format(payload, hex_hash)
-#
-# # symbol_set = 'global'
-
-#
-# # url = 'https://apiv2.bitcoinaverage.com/indices/{symbol_set}/history/{symbol}?period={period}&format={format}'
-# url = 'https://apiv2.bitcoinaverage.com/indices/global/history/BTCUSD?period=daily&format=json'
-# # url = 'https://apiv2.bitcoinaverage.com/indices/global/ticker/BTCUSD'
-# headers = {'X-Signature': signature}
-# result = requests.get(url=url, headers=headers)
-#
-# history_api_results = result.json()
-#
-# for i in history_api_results:
-#     print(i)
-# # print(result.json())
-
-
+import pandas as pd
 
 
 
@@ -106,11 +69,9 @@ def get_history(start, end):
                 break
 
     return hist
-    # print(datetime.datetime.fromtimestamp(int(hist[0][0])).isoformat())
-    # print(datetime.datetime.fromtimestamp(int(hist[-1][0])).isoformat())
-    # print(len(hist))
-
 def add_to_dict(history_dict, history_slice):
+    ## add the data in each slice of history to a dict
+
 
     if len(history_slice) == 1:
         print(history_slice)
@@ -126,24 +87,26 @@ def add_to_dict(history_dict, history_slice):
 
 
         ## add info to dict
-        history_dict[period_string] = {'low': period[1],
-                                    'high': period[2],
-                                    'open': period[3],
-                                    'close': period[4],
-                                    'volume': period[5]}
+        history_dict.append({'time': str(period_string),
+                                    'low': str(period[1]),
+                                    'high': str(period[2]),
+                                    'open': str(period[3]),
+                                    'close': str(period[4]),
+                                    'volume': str(period[5])})
+
+        # ## add info to dict
+        # history_dict[period_string] = {'time': period_string,
+        #                             'low': period[1],
+        #                             'high': period[2],
+        #                             'open': period[3],
+        #                             'close': period[4],
+        #                             'volume': period[5]}
     return history_dict
 
 
 
-def main():
-    history_dict = {}
-
-    ## date format
-    ## YY MM DD HH MM
-    ## 18 03 02 00 00
-    start = 1802250501
-    end =   1802271001
-
+def get_btc_price_history(start, end):
+    history_dict = []
     # for i in range(1, 5, 1):
 
     if (end - start) > 500:
@@ -165,11 +128,11 @@ def main():
             piece_start_datetime = piece_start_datetime + datetime.timedelta(minutes = 350)
             piece_end_datetime = piece_end_datetime + datetime.timedelta(minutes = 350)
 
-        piece_end = int(piece_end_datetime.strftime('%y%m%d%H%M'))
+        # piece_end = int(piece_end_datetime.strftime('%y%m%d%H%M'))
 
-        left_over = end - piece_end
-        piece_start += left_over
-        piece_end += left_over
+        # left_over = end - piece_end
+        # piece_start += left_over
+        # piece_end += left_over
 
         history_slice = get_history(str(piece_start_datetime.strftime('%y%m%d%H%M')), str(piece_end_datetime.strftime('%y%m%d%H%M')))
         history_dict = add_to_dict(history_dict, history_slice)
@@ -181,20 +144,75 @@ def main():
 
         # time.sleep(1)
 
+    return history_dict
 
 
-    x = 0
-    ## history_dict is formatted dict ready to upload to SQL db
-    for p in sorted(history_dict):
 
-        print(str(p)+' low: '+str(history_dict[p]['low'])+'  high: '+str(history_dict[p]['high'])+'   open: '+str(history_dict[p]['open'])+'   close: '+str(history_dict[p]['close'])+'  vol: '+str(history_dict[p]['volume']))
+    # x = 0
+    # ## history_dict is formatted dict ready to upload to SQL db
+    # for p in sorted(history_dict):
+    #
+    #     print(str(p)+' low: '+str(history_dict[p]['low'])+'  high: '+str(history_dict[p]['high'])+'   open: '+str(history_dict[p]['open'])+'   close: '+str(history_dict[p]['close'])+'  vol: '+str(history_dict[p]['volume']))
+    #
+    #
+    #     x+=1
+    #     if x == 20:
+    #         sys.exit()
 
 
-        x+=1
-        if x == 20:
-            sys.exit()
 
 
+# def lookin_to_buy(data):
+# 	'''
+# 	- for backtesting, use SQL_db with different range
+# 	than normal (today = Jan 1 2015 12:00 am).
+# 	- no orders will actually be placed
+# 	- log_activity will reset on demand
+#
+#
+#     ## First get last 14 day
+#
+#     ## get
+#
+# 	'''
+    # atr_period_days_tune = 14
+
+
+
+
+
+
+def main():
+    ## get historic price of btc
+
+    ## date format
+    ##           YYMMDDHHMM
+    gdax_start = 1802200501
+    gdax_end =   1802270501
+
+    ## 1st query
+    # gdax_start = 1802270501
+    # gdax_end =   1802281001
+
+    btc_history = get_btc_price_history(gdax_start, gdax_end)
+
+    return btc_history
+    #
+    # for i in btc_history:
+    #     print(i)
+    #     break
+    # # today =
+    #
+    #
+    # df = pd.DataFrame(btc_history, columns=['time', 'low', 'high', 'open','close','volume' ])
+    # df.set_index('time', inplace=True)
+    #
+    # print(df)
+
+    # for i in btc_history:
+    #     print(i)
+    #     print(btc_history[0])
+    #     break
 
 if __name__ == '__main__':
     main()
@@ -383,3 +401,43 @@ if __name__ == '__main__':
 # gdax_api = simplejson.load(req)
 
 # print(public_client.get_product_historic_rates('ETH-USD'))
+
+
+
+## ----------------------------------------
+## maybe bitcoinaverage or other for of data
+
+# from bitcoinaverage import history
+
+
+
+
+#
+#
+#
+# import hashlib
+# import hmac
+# import requests
+# import time
+#
+# secret_key = 'Yjg1OWZjMzFmM2Q5NGUxZjgyM2FiMWJmMGIwMTM5MDY1ZDgzOWQwYWQ1YTY0NzhjOWNlOGNjYWYxMzgwMGIyNw'
+# public_key = 'ZjQyZmQxM2NkOGQ4NGMxZDg2NmZlOTlmNWM2ZmE1OTY'
+# timestamp = int(time.time())
+# payload = '{}.{}'.format(timestamp, public_key)
+# hex_hash = hmac.new(secret_key.encode(), msg=payload.encode(), digestmod=hashlib.sha256).hexdigest()
+# signature = '{}.{}'.format(payload, hex_hash)
+#
+# # symbol_set = 'global'
+
+#
+# # url = 'https://apiv2.bitcoinaverage.com/indices/{symbol_set}/history/{symbol}?period={period}&format={format}'
+# url = 'https://apiv2.bitcoinaverage.com/indices/global/history/BTCUSD?period=daily&format=json'
+# # url = 'https://apiv2.bitcoinaverage.com/indices/global/ticker/BTCUSD'
+# headers = {'X-Signature': signature}
+# result = requests.get(url=url, headers=headers)
+#
+# history_api_results = result.json()
+#
+# for i in history_api_results:
+#     print(i)
+# # print(result.json())

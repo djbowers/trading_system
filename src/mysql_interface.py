@@ -3,15 +3,6 @@ This module contains all the code for interacting with mySQL database.
 
 """
 
-def get_table(table_name):
-    table_data = {}
-
-
-def get_period_high(period):
-    """
-    get the highest price for the given period
-    """
-
 
 def read_db()
 ## ---------------------------------

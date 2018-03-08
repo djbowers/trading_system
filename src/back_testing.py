@@ -59,6 +59,14 @@ close_price = '10000'
 
 
 
+
+
+
+
+
+
+
+
 ## ---------------------------------
 ##
 ##      add data to table
@@ -89,9 +97,53 @@ def add_row(time, close_price, open_price, high, low):
 
 
 
+def get_24_hour_high():
+    ## execute Query to get 24 hour high
+
+def get_24_hour_low():
+    ## execute Query to get 24 hour high
+
+
+
+def algorithm(current_time):
+
+    ## see if now is test_period high
+
+    test_period = 24
+
+    ## Query db to return MAX(test_period) & MIN(test_period)
+
+    high = get_24get_24_hour_high()
+    low = get_24_hour_low()
+
+    if high[0] == current_time:
+        results = [True, 'Long']
+
+    if low[0] == current_time:
+        results = [True, 'Short']
+
+    return results
+
+
+    ## if result == now, buy!
+
+
+
+
+    ## Query db to return the last 14 days of information.
+    ## format days from db as 24 hours periods
+    ## use MIN() & MAX() query's to get daily high and lows
+
+
+    ## get atr
+
+    # piece_start_datetime = datetime.datetime.strptime(str(), '%y%m%d%H%M')
+
+
 
 def main():
-    btc_history = gdax_history.main()
+    # btc_history = gdax_history.main()
+    btc_history = ## get from SQL
     for m in btc_history:
 
         time = m['time']
@@ -100,10 +152,9 @@ def main():
         high = m['high']
         low = m['low']
 
-        try:
-            add_row(time, close_price, open_price, high, low)
-        except:
-            continue
+
+        ## returns [(True, False), (long, short)]
+        in_or_out = algorithm(time)
 
         # print(m)
         # sys.exit()
