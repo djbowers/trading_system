@@ -68,16 +68,17 @@ close_price = '10000'
 
 
 def add_row(time, close_price, open_price, high, low):
-    add_to_table1 = ("INSERT INTO BTC_USD "
-                   "(date, close_price, open_price, high, low) "
-                  "VALUES (%(date)s, %(close_price)s, %(open_price)s, %(high)s, %(low)s)")
+    add_to_table1 = ("INSERT INTO test_table_1 "
+                   "(time, close_price, open_price, high, low) "
+                  "VALUES (%(time)s, %(close_price)s, %(open_price)s, %(high)s, %(low)s)")
     # Row 1 Entry
     row1 = {
-        'date': time,
+        'time': time,
         'close_price':close_price,
+        'open_price': open_price,
+
         'high': high,
         'low': low,
-        'open_price': open_price,
         }
 
 
@@ -102,7 +103,9 @@ def main():
 
         try:
             add_row(time, close_price, open_price, high, low)
-        except:
+            print('added!')
+        except Exception as e:
+            print(e)
             continue
 
         # print(m)
@@ -126,28 +129,28 @@ if __name__ == '__main__':
 # # _________________________________
 #
 #
-# DB_NAME = 'btc_usd'
+# DB_NAME = 'BTC_USD'
 #
 # TABLES = {}
-# TABLES['btc_usd'] = (
-#     "CREATE TABLE `btc_usd` ("
-#     "  `date` int(11) NOT NULL,"
+# TABLES['test_table_1'] = (
+#     "CREATE TABLE `test_table_1` ("
+#     "  `time` int(11) NOT NULL,"
+#     "  `close_price` varchar(14) NOT NULL,"
+#     "  `open_price` varchar(14) NOT NULL,"
 #     "  `high` varchar(14) NOT NULL,"
-#     "  `low` varchar(14) NOT NULL,"
-#     "  `open` varchar(14) NOT NULL,"
-#     "  `close` varchar(14) NOT NULL,"
-#     "  PRIMARY KEY (`date`)"
+#     "  `low` int(14) NOT NULL,"
+#     "  PRIMARY KEY (`time`)"
 #     ") ENGINE=InnoDB")
 #
-# TABLES['test_table2'] = (
-#     "CREATE TABLE `test_table2` ("
-#     "  `date` int(11) NOT NULL,"
-#     "  `high` varchar(14) NOT NULL,"
-#     "  `low` varchar(14) NOT NULL,"
-#     "  `open` varchar(14) NOT NULL,"
-#     "  `close` varchar(14) NOT NULL,"
-#     "  PRIMARY KEY (`date`)"
-#     ") ENGINE=InnoDB")
+# # TABLES['test_table2'] = (
+# #     "CREATE TABLE `test_table2` ("
+# #     "  `date` int(11) NOT NULL,"
+# #     "  `high` varchar(14) NOT NULL,"
+# #     "  `low` varchar(14) NOT NULL,"
+# #     "  `open` varchar(14) NOT NULL,"
+# #     "  `close` varchar(14) NOT NULL,"
+# #     "  PRIMARY KEY (`date`)"
+# #     ") ENGINE=InnoDB")
 #
 # for name, ddl in TABLES.items():
 #     try:

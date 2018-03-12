@@ -4,8 +4,6 @@ import subprocess
 from subprocess import Popen
 from subprocess import check_output
 import shutil
-
-#from __future__ import print_function
 import glob
 import base64
 import mimetypes
@@ -21,11 +19,6 @@ import time
 import gdax, time
 import pandas as pd
 
-
-
-
-# import gdax
-# import datetime
 
 
 def get_history(start, end):
@@ -44,8 +37,8 @@ def get_history(start, end):
     product = "{}-{}".format("BTC", "USD")
     publicClient = gdax.PublicClient()
 
-    ## unit is granulatrity
-    unit = 60
+    ## unit is granulatrity (by the second)
+    unit = 3600
 
 
     end = datetime.datetime.strptime(end, '%y%m%d%H%M')
@@ -56,6 +49,7 @@ def get_history(start, end):
                 start=start.isoformat(),
                 end=end.isoformat(),
                 granularity=unit)
+
 
     if len(hist) == 1:
         for r in range(1, 10, 1):
@@ -79,6 +73,8 @@ def add_to_dict(history_dict, history_slice):
 
     ## look through desired
     for period in history_slice:
+        # print('Period-----')
+        # print(period)
         readable_date = time.ctime(period[0])
 
 
@@ -88,7 +84,7 @@ def add_to_dict(history_dict, history_slice):
 
         ## add info to dict
         history_dict.append({'time': str(period_string),
-                                    'low': str(period[1]),
+                                    'low': int(period[1]),
                                     'high': str(period[2]),
                                     'open': str(period[3]),
                                     'close': str(period[4]),
@@ -109,13 +105,14 @@ def get_btc_price_history(start, end):
     history_dict = []
     # for i in range(1, 5, 1):
 
-    if (end - start) > 500:
+    if (end - start) > 121200:
         print('more than 500!!')
 
         diff = end-start
-        full_chunks = int(diff/500)
+        full_chunks = int(diff/121200)
+        print(full_chunks)
         piece_start_datetime = datetime.datetime.strptime(str(start), '%y%m%d%H%M')
-        piece_end_datetime = piece_start_datetime + datetime.timedelta(minutes = 300)
+        piece_end_datetime = piece_start_datetime + datetime.timedelta(minutes = 18000)
 
 
         # 350 minute  chunks
@@ -125,8 +122,8 @@ def get_btc_price_history(start, end):
             history_slice = get_history(str(piece_start_datetime.strftime('%y%m%d%H%M')), str(piece_end_datetime.strftime('%y%m%d%H%M')))
 
             history_dict = add_to_dict(history_dict, history_slice)
-            piece_start_datetime = piece_start_datetime + datetime.timedelta(minutes = 350)
-            piece_end_datetime = piece_end_datetime + datetime.timedelta(minutes = 350)
+            piece_start_datetime = piece_start_datetime + datetime.timedelta(minutes = 18000)
+            piece_end_datetime = piece_end_datetime + datetime.timedelta(minutes = 18000)
 
         # piece_end = int(piece_end_datetime.strftime('%y%m%d%H%M'))
 
@@ -187,8 +184,34 @@ def main():
 
     ## date format
     ##           YYMMDDHHMM
-    gdax_start = 1802200501
-    gdax_end =   1802270501
+    gdax_start = 1801130101
+    gdax_end =   1802130101
+
+    # start = 1802150101
+    # end =   1802271301
+    #
+    # print(end-start)
+    # sys.exit()
+    #
+    #
+    # product = "{}-{}".format("BTC", "USD")
+    # publicClient = gdax.PublicClient()
+    #
+    # ## unit is granulatrity (by the second)
+    # unit = 3600
+    #
+    #
+    # end = datetime.datetime.strptime(str(end), '%y%m%d%H%M')
+    # start = datetime.datetime.strptime(str(start), '%y%m%d%H%M')
+    #
+    # hist = publicClient.get_product_historic_rates(
+    #             product,
+    #             start=start.isoformat(),
+    #             end=end.isoformat(),
+    #             granularity=unit)
+    #
+    # print(len(hist))
+    # sys.exit()
 
     ## 1st query
     # gdax_start = 1802270501
