@@ -5,7 +5,7 @@ import pandas
 import requests
 
 
-class GDAX(object):
+class CurrencyPair(object):
     """Class for fetching candle data for a given currency pair."""
 
     def __init__(self, pair: str):
@@ -34,22 +34,22 @@ class GDAX(object):
         slice_start = start
         while slice_start != end:
             slice_end = min(slice_start + delta, end)
-            data += self.request_slice(slice_start, slice_end, granularity)
+            data += self._request_slice(slice_start, slice_end, granularity)
             slice_start = slice_end
 
         data_frame = pandas.DataFrame(data=data, columns=['time', 'low', 'high', 'open', 'close', 'volume'])
         data_frame.set_index('time', inplace=True)
         return data_frame
 
-    def request_slice(self, start, end, granularity):
+    def _request_slice(self, start, end, granularity):
         retries = 3  # Allow 3 retries (we might get rate limited)
 
         for retry_count in range(0, retries):
             # From https://docs.gdax.com/#get-historic-rates the response is in the format:
             # [[time, low, high, open, close, volume], ...]
             response = requests.get(self.uri, {
-                'start': GDAX._date_to_iso8601(start),
-                'end': GDAX._date_to_iso8601(end),
+                'start': CurrencyPair._date_to_iso8601(start),
+                'end': CurrencyPair._date_to_iso8601(end),
                 'granularity': granularity * 60  # GDAX API granularity is in seconds.
             })
 
