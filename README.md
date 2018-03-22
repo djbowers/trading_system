@@ -3,3 +3,11 @@ Initial repository for cryptocurrency trading bot utilizing Turtle Trading metho
 
 ## How to Use
 Run `python alt-trading-bot/download_gdax_data.py` to collect some sample BTC-USD data from GDAX.
+
+## Components
+* heartbeat-loop (outer loop)
+* event-loop (inner loop)
+* ExecutionHandler
+* Event
+* Strategy
+* Portfolio

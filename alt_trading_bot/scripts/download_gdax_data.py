@@ -4,13 +4,17 @@ from datetime import datetime
 from alt_trading_bot.gdax.currency_pair import CurrencyPair
 from config import base_path
 
+data_dir = os.path.join(base_path, 'data')
+
 
 def get_data_frame(start, end, granularity):
     return CurrencyPair('BTC-USD').fetch(start, end, granularity)
 
 
 def save_to_csv(data_frame):
-    data_frame.to_csv(os.path.join(base_path, 'data/data.csv'))
+    if not os.path.exists(data_dir):
+        os.mkdir(data_dir)
+    data_frame.to_csv(os.path.join(data_dir, 'btc.csv'))
 
 
 def run():
