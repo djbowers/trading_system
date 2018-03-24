@@ -4,7 +4,23 @@ class Event:
     (inherited) events, that will trigger further events in the
     trading infrastructure.
     """
-    pass
+
+    @staticmethod
+    def create_new_event(event_type, **kwargs):
+        """
+        Factory method for creating new Events.
+        """
+        if event_type == 'market':
+            return MarketEvent()
+        elif event_type == 'signal':
+            return SignalEvent(kwargs['symbol'], kwargs['datetime'], kwargs['signal_type'])
+        elif event_type == 'order':
+            return OrderEvent(kwargs['symbol'], kwargs['order_type'], kwargs['quantity'], kwargs['direction'])
+        elif event_type == 'fill':
+            if kwargs['commission']:
+                return FillEvent(kwargs['timeindex'], kwargs['symbol'], kwargs['exchange'], kwargs['quantity'], kwargs['direction'], kwargs['fill_cost'], kwargs['commission'])
+            else:
+                return FillEvent(kwargs['timeindex'], kwargs['symbol'], kwargs['exchange'], kwargs['quantity'], kwargs['direction'], kwargs['fill_cost'])
 
 
 class MarketEvent(Event):
@@ -113,7 +129,7 @@ class FillEvent(Event):
 
         # Calculate commission
         if commission is None:
-            self.commission = self.calulate_ib_commission()
+            self.commission = self.calculate_ib_commission()
         else:
             self.commission = commission
 

@@ -4,7 +4,7 @@ import os.path
 
 import pandas as pd
 
-from .base import DataHandler
+from . import DataHandler
 from ..event import MarketEvent
 
 
@@ -16,7 +16,7 @@ class HistoricCSVDataHandler(DataHandler):
     trading interface.
     """
 
-    def __init__(self, events, csv_dir, symbol_list):
+    def __init__(self, event_queue, csv_dir, symbol_list):
         """
         Initialises the historic data handler by requesting
         the location of the CSV files and a list of symbols.
@@ -25,11 +25,11 @@ class HistoricCSVDataHandler(DataHandler):
         'symbol.csv', where symbol is a string in the list.
 
         Args:
-            events: The Event Queue.
-            csv_dir: Absolute directory path to the CSV files.
-            symbol_list: A list of symbol strings.
+            event_queue: The EventQueue object
+            csv_dir: Absolute directory path to the CSV files
+            symbol_list: A list of symbol strings
         """
-        self.events = events
+        self.event_queue = event_queue
         self.csv_dir = csv_dir
         self.symbol_list = symbol_list
 
@@ -102,4 +102,4 @@ class HistoricCSVDataHandler(DataHandler):
             else:
                 if bar is not None:
                     self.latest_symbol_data[s].append(bar)
-        self.events.put(MarketEvent())
+        self.event_queue.put(MarketEvent())

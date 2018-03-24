@@ -2,7 +2,7 @@ from math import floor
 
 import pandas as pd
 
-from .base import Portfolio
+from . import Portfolio
 from ..event import OrderEvent
 
 
@@ -14,21 +14,21 @@ class NaivePortfolio(Portfolio):
     used to test simpler strategies such as BuyAndHoldStrategy.
     """
 
-    def __init__(self, bars, events, start_date, initial_capital=100000.0):
+    def __init__(self, data_handler, event_queue, start_date, initial_capital=100000.0):
         """
-        Initialises the portfolio with bars and an event queue.
+        Initialises the portfolio with a data handler and an event queue.
         Also includes a starting datetime index and initial capital
         (USD unless otherwise stated).
 
         Args:
-            bars: The DataHandler object with current market data.
-            events: The Event Queue object.
-            start_date: The start date (bar) of the portfolio.
-            initial_capital: The starting capital in USD.
+            data_handler: The DataHandler object with current market data
+            event_queue: The EventQueue object
+            start_date: The start date (bar) of the portfolio
+            initial_capital: The starting capital in USD
         """
-        self.bars = bars
-        self.events = events
-        self.symbol_list = self.bars.symbol_list
+        self.data_handler = data_handler
+        self.event_queue = event_queue
+        self.symbol_list = self.data_handler.symbol_list
         self.start_date = start_date
         self.initial_capital = initial_capital
 
@@ -37,6 +37,73 @@ class NaivePortfolio(Portfolio):
 
         self.all_holdings = self._construct_all_holdings()
         self.current_holdings = self._construct_current_holdings()
+
+    def update_signal(self, event):
+        """
+        Acts on a SignalEvent to generate new orders
+        based on the portfolio logic.
+        """
+        if event.type == 'SIGNAL':
+            order_event = self._generate_naive_order(event)
+            self.event_queue.put(order_event)
+
+    def update_fill(self, event):
+        """
+        Updates the portfolio current positions and holdings
+        from a FillEvent.
+        """
+        if event.type == 'FILL':
+            self._update_positions_from_fill(event)
+            self._update_holdings_from_fill(event)
+
+    def update_timeindex(self, event):
+        """
+        Adds a new record to the positions matrix for the current
+        market data bar. This reflects the PREVIOUS bar, i.e. all
+        current market data at this stage is known (OLHCVI).
+
+        Makes use of a MarketEvent from the events queue.
+        """
+        bars = {}
+        for s in self.symbol_list:
+            bars[s] = self.data_handler.get_latest_bars(s, N=1)
+
+        # Update positions
+        dp = self._construct_positions_list()
+        dp['datetime'] = bars[self.symbol_list[0]][0][1]
+
+        for s in self.symbol_list:
+            dp[s] = self.current_positions[s]
+
+        # Append the current positions
+        self.all_positions.append(dp)
+
+        # Update holdings
+        dh = self._construct_holdings_list()
+        dh['datetime'] = bars[self.symbol_list[0]][0][1]
+        dh['cash'] = self.current_holdings['cash']
+        dh['commission'] = self.current_holdings['commission']
+        dh['total'] = self.current_holdings['cash']
+
+        for s in self.symbol_list:
+            # Approximation to the real value
+            market_value = self.current_positions[s] * bars[s][0][5]
+            dh[s] = market_value
+            dh['total'] += market_value
+
+        # Append the current holdings
+        self.all_holdings.append(dh)
+
+    def create_equity_curve_dataframe(self):
+        """
+        Creates a pandas DataFrame from the all_holdings
+        list of dictionaries.
+        """
+        curve = pd.DataFrame(self.all_holdings)
+        curve.set_index('datetime', inplace=True)
+        curve['returns'] = curve['total'].pct_change()
+        curve['equity_curve'] = (1.0+curve['returns']).cumprod()
+        self.equity_curve = curve
 
     def _construct_positions_list(self):
         """
@@ -84,44 +151,6 @@ class NaivePortfolio(Portfolio):
         d['total'] = self.initial_capital
         return d
 
-    def update_timeindex(self, event):
-        """
-        Adds a new record to the positions matrix for the current
-        market data bar. This reflects the PREVIOUS bar, i.e. all
-        current market data at this stage is known (OLHCVI).
-
-        Makes use of a MarketEvent from the events queue.
-        """
-        bars = {}
-        for s in self.symbol_list:
-            bars[s] = self.bars.get_latest_bars(s, N=1)
-
-        # Update positions
-        dp = self._construct_positions_list()
-        dp['datetime'] = bars[self.symbol_list[0]][0][1]
-
-        for s in self.symbol_list:
-            dp[s] = self.current_positions[s]
-
-        # Append the current positions
-        self.all_positions.append(dp)
-
-        # Update holdings
-        dh = self._construct_holdings_list()
-        dh['datetime'] = bars[self.symbol_list[0]][0][1]
-        dh['cash'] = self.current_holdings['cash']
-        dh['commission'] = self.current_holdings['commission']
-        dh['total'] = self.current_holdings['cash']
-
-        for s in self.symbol_list:
-            # Approximation to the real value
-            market_value = self.current_positions[s] * bars[s][0][5]
-            dh[s] = market_value
-            dh['total'] += market_value
-
-        # Append the current holdings
-        self.all_holdings.append(dh)
-
     def _update_positions_from_fill(self, fill):
         """
         Takes a FillEvent object and updates the position matrix
@@ -156,21 +185,12 @@ class NaivePortfolio(Portfolio):
             fill_dir = -1
 
         # Update the holdings list with new quantities
-        fill_cost = self.bars.get_latest_bars(fill.symbol)[0][5]  # Close price
+        fill_cost = self.data_handler.get_latest_bars(fill.symbol)[0][5]  # Close price
         cost = fill_dir * fill_cost * fill.quantity
         self.current_holdings[fill.symbol] += cost
         self.current_holdings['commission'] += fill.commission
         self.current_holdings['cash'] -= (cost + fill.commission)
         self.current_holdings['total'] -= (cost + fill.commission)
-
-    def update_fill(self, event):
-        """
-        Updates the portfolio current positions and holdings
-        from a FillEvent.
-        """
-        if event.type == 'FILL':
-            self._update_positions_from_fill(event)
-            self._update_holdings_from_fill(event)
 
     def _generate_naive_order(self, signal):
         """
@@ -201,23 +221,3 @@ class NaivePortfolio(Portfolio):
         if direction == 'EXIT' and cur_quantity < 0:
             order = OrderEvent(symbol, order_type, abs(cur_quantity), 'BUY')
         return order
-
-    def update_signal(self, event):
-        """
-        Acts on a SignalEvent to generate new orders
-        based on the portfolio logic.
-        """
-        if event.type == 'SIGNAL':
-            order_event = self._generate_naive_order(event)
-            self.events.put(order_event)
-
-    def create_equity_curve_dataframe(self):
-        """
-        Creates a pandas DataFrame from the all_holdings
-        list of dictionaries.
-        """
-        curve = pd.DataFrame(self.all_holdings)
-        curve.set_index('datetime', inplace=True)
-        curve['returns'] = curve['total'].pct_change()
-        curve['equity_curve'] = (1.0+curve['returns']).cumprod()
-        self.equity_curve = curve

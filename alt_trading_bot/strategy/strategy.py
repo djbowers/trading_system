@@ -1,7 +1,9 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
+
+from . import BuyAndHoldStrategy
 
 
-class Strategy:
+class Strategy(ABC):
     """
     Strategy is an abstract base class providing an interface for
     all subsequent (inherited) strategy handling objects.
@@ -15,7 +17,13 @@ class Strategy:
     since it obtains the bar tuples from a queue object.
     """
 
-    __metaclass__ = ABCMeta
+    @staticmethod
+    def create_new_strategy(strategy_type, **kwargs):
+        """
+        Factory method for creating new Strategies.
+        """
+        if strategy_type == 'buy_and_hold':
+            return BuyAndHoldStrategy(kwargs['data_handler'], kwargs['event_queue'])
 
     @abstractmethod
     def calculate_signals(self, event):

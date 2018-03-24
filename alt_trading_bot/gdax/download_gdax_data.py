@@ -2,9 +2,9 @@ import os
 from datetime import datetime
 
 from alt_trading_bot.gdax.currency_pair import CurrencyPair
-from config import base_path
+from config import basedir
 
-data_dir = os.path.join(base_path, 'data')
+data_dir = os.path.join(basedir, 'data')
 
 
 def get_data_frame(start, end, granularity):

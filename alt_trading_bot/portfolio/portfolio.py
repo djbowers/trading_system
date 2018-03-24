@@ -1,14 +1,25 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
+
+from . import NaivePortfolio
 
 
-class Portfolio:
+class Portfolio(ABC):
     """
     The Portfolio class handles the positions and market
     value of all instruments at a resolution of a "bar",
     i.e. secondly, minutely, 5-min, 30-min, 60 min, or EOD.
     """
 
-    __metaclass__ = ABCMeta
+    @staticmethod
+    def create_new_portfolio(portfolio_type, **kwargs):
+        """
+        Factory method for creating new Portfolios.
+        """
+        if portfolio_type == 'naive':
+            if 'initial_capital' in kwargs.keys():
+                return NaivePortfolio(kwargs['data_handler'], kwargs['event_queue'], kwargs['start_date'], kwargs['initial_capital'])
+            else:
+                return NaivePortfolio(kwargs['data_handler'], kwargs['event_queue'], kwargs['start_date'])
 
     @abstractmethod
     def update_signal(self, event):

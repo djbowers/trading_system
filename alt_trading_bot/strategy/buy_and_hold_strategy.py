@@ -1,4 +1,4 @@
-from .base import Strategy
+from . import Strategy
 from ..event import SignalEvent
 
 
@@ -11,30 +11,20 @@ class BuyAndHoldStrategy(Strategy):
     as well as a benchmark upon which to compare other strategies.
     """
 
-    def __init__(self, bars, events):
+    def __init__(self, data_handler, event_queue):
         """
         Initialises the buy and hold strategy.
 
         Args:
-            bars: The DataHandler object that provides bar information.
-            events: The Event Queue object.
+            data_handler: The DataHandler object that provides bar information.
+            event_queue: The EventQueue object.
         """
-        self.bars = bars
-        self.symbol_list = self.bars.symbol_list
-        self.events = events
+        self.data_handler = data_handler
+        self.symbol_list = self.data_handler.symbol_list
+        self.event_queue = event_queue
 
         # Once buy & hold signal is given, these are set to True
         self.bought = self._calculate_initial_bought()
-
-    def _calculate_initial_bought(self):
-        """
-        Adds keys to the bought dictionary for all symbols
-        and sets them to False.
-        """
-        bought = {}
-        for s in self.symbol_list:
-            bought[s] = False
-        return bought
 
     def calculate_signals(self, event):
         """
@@ -47,10 +37,22 @@ class BuyAndHoldStrategy(Strategy):
         """
         if event.type == 'MARKET':
             for s in self.symbol_list:
-                bars = self.bars.get_latest_bars(s, N=1)
+                bars = self.data_handler.get_latest_bars(s, N=1)
                 if bars is not None and bars != []:
                     if not self.bought[s]:
                         # (Symbol, Datetime, Type = LONG, SHORT or EXIT)
                         signal = SignalEvent(bars[0][0], bars[0][1], 'LONG')
-                        self.events.put(signal)
+                        self.event_queue.put(signal)
                         self.bought[s] = True
+
+    def _calculate_initial_bought(self):
+        """
+        Adds keys to the bought dictionary for all symbols
+        and sets them to False.
+        """
+        bought = {}
+        for s in self.symbol_list:
+            bought[s] = False
+        return bought
+
+
