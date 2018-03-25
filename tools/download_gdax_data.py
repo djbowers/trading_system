@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 
 from config import data_dir
-from alt_trading_bot.gdax import GDAX
+from trading_system.gdax import GDAX
 
 
 def download_data():
