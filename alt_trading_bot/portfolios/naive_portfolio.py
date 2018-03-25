@@ -2,11 +2,11 @@ from math import floor
 
 import pandas as pd
 
-from . import Portfolio
-from ..event import OrderEvent
+from .base_portfolio import BasePortfolio
+from ..events import OrderEvent
 
 
-class NaivePortfolio(Portfolio):
+class NaivePortfolio(BasePortfolio):
     """
     The NaivePortfolio object is designed to send orders to
     a brokerage object with a constant quantity size blindly,

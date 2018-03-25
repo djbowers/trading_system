@@ -5,7 +5,7 @@ import pandas
 import requests
 
 
-class GDAXInterface(object):
+class GDAX:
     """Class for fetching candle data for a given currency pair."""
 
     def __init__(self, pair: str):
@@ -48,8 +48,8 @@ class GDAXInterface(object):
             # From https://docs.gdax.com/#get-historic-rates the response is in the format:
             # [[time, low, high, open, close, volume], ...]
             response = requests.get(self.uri, {
-                'start': GDAXInterface._date_to_iso8601(start),
-                'end': GDAXInterface._date_to_iso8601(end),
+                'start': GDAX._date_to_iso8601(start),
+                'end': GDAX._date_to_iso8601(end),
                 'granularity': granularity * 60  # GDAX API granularity is in seconds.
             })
 

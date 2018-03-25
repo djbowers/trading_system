@@ -1,1 +1,1 @@
-from alt_trading_bot.strategy.base import Strategy
+from alt_trading_bot.strategies.base import Strategy

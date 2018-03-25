@@ -1,9 +1,7 @@
-from abc import ABC, abstractmethod
-
-from . import HistoricCSVDataHandler
+from abc import ABCMeta, abstractmethod
 
 
-class DataHandler(ABC):
+class BaseDataHandler:
     """
     DataHandler is an abstract base class providing an interface for
     all subsequent (inherited) data handlers (both live and historic).
@@ -16,13 +14,7 @@ class DataHandler(ABC):
     system will be treated identically by the rest of the backtesting suite.
     """
 
-    @staticmethod
-    def create_handler(data_type, **kwargs):
-        """
-        Factory method for creating new Data Handlers.
-        """
-        if data_type == 'historic_csv':
-            return HistoricCSVDataHandler(kwargs['event_queue'], kwargs['csv_dir'], kwargs['symbol_list'])
+    __metaclass__ = ABCMeta
 
     @abstractmethod
     def get_latest_bars(self, symbol, N=1):

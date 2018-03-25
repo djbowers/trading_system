@@ -1,5 +1,6 @@
 import os
-basedir = os.path.abspath(os.path.dirname(__file__))
+base_dir = os.path.abspath(os.path.dirname(__file__))
+data_dir = os.path.join(base_dir, 'data')
 
 
 class Config:

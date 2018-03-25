@@ -1,22 +1,19 @@
 import os
 import queue
 
-from config import basedir
-from .data import DataHandler
-from .execution import ExecutionHandler
-from .portfolio import Portfolio
-from .strategy import Strategy
+from config import base_dir
+from . import data_handlers
+from . import execution_handlers
+from . import portfolios
+from . import strategies
 
 # Establish the event queue
 events = queue.Queue()
-csv_dir = os.path.join(basedir, 'data')
+DATA_DIR = os.path.join(base_dir, 'data')
 symbol_list = ['BTC']
 
 # Declare the components with respective parameters
-data_handler = DataHandler.create_handler('historic_csv', events=events, csv_dir=csv_dir, symbol_list=symbol_list)
-strategy = Strategy.create_new_strategy('buy_and_hold', data_handler=data_handler, events=events)
-portfolio = Portfolio.create_new_portfolio('naive', data_handler=data_handler, events=events, )
-# broker = ExecutionHandler(..)
-
-
-execution_handler = ExecutionHandler.create_new_handler('simulated', events=events)
+# data_handler = data_handlers.create('historic_csv', events, csv_dir, symbol_list)
+# execution_handler = execution_handlers.create('simulated', events)
+# strategy = strategies.create('buy_and_hold', data_handler, events)
+# portfolio = portfolios.create('naive', data_handler, events, )

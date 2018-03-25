@@ -1,2 +1,0 @@
-class EventQueue:
-    pass

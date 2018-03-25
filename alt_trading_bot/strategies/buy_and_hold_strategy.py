@@ -1,8 +1,8 @@
-from . import Strategy
-from ..event import SignalEvent
+from .base_strategy import BaseStrategy
+from ..events import SignalEvent
 
 
-class BuyAndHoldStrategy(Strategy):
+class BuyAndHoldStrategy(BaseStrategy):
     """
     This is an extremely simple strategy that goes LONG all of the
     symbols as soon as a bar is received. It will never exit a position.
