@@ -2,7 +2,7 @@ import os
 import queue
 
 from config import base_dir
-from . import data_handlers
+from . import price_handler
 from . import execution_handlers
 from . import portfolios
 from . import strategies

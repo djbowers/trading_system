@@ -2,4 +2,5 @@ from queue import Queue
 
 
 class EventQueue(Queue):
-    pass
+    def get_next_event(self):
+        return self.get_nowait()

@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 
 
-class BaseDataHandler:
+class BasePriceHandler:
     """
     DataHandler is an abstract base class providing an interface for
     all subsequent (inherited) data handlers (both live and historic).
@@ -31,3 +31,7 @@ class BaseDataHandler:
         for all symbols in the symbol list.
         """
         raise NotImplementedError("Should implement update_bars()")
+
+
+class SymbolError(KeyError):
+    pass

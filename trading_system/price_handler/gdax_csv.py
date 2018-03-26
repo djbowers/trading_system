@@ -3,12 +3,12 @@ import os.path
 
 import pandas as pd
 
-from .base_data_handler import BaseDataHandler
+from .base import BasePriceHandler, SymbolError
 from ..events import MarketEvent
 from time import gmtime, strftime
 
 
-class HistoricCSVDataHandler(BaseDataHandler):
+class GdaxCsvPriceHandler(BasePriceHandler):
     """
     HistoricCSVDataHandler is designed to read CSV files for
     each requested symbol from disk and provide an interface
@@ -53,7 +53,7 @@ class HistoricCSVDataHandler(BaseDataHandler):
         try:
             bars_list = self.latest_symbol_data[symbol]
         except KeyError:
-            raise KeyError("That symbol is not available in the historical data set.")
+            raise SymbolError("That symbol is not available in the historical data set.")
         else:
             return bars_list[-N:]
 
