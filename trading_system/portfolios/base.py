@@ -5,7 +5,7 @@ class BasePortfolio:
     """
     The Portfolio class handles the positions and market
     value of all instruments at a resolution of a "bar",
-    i.e. secondly, minutely, 5-min, 30-min, 60 min, or EOD.
+    i.e. 1-min, 5-min, 15-min, 1-hr, 4-hr, or daily.
     """
 
     __metaclass__ = ABCMeta

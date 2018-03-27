@@ -9,26 +9,20 @@ from ..events import OrderEvent
 class NaivePortfolio(BasePortfolio):
     """
     The NaivePortfolio object is designed to send orders to
-    a brokerage object with a constant quantity size blindly,
+    an exchange object with a constant quantity size blindly,
     i.e. without any risk management or position sizing. It is
     used to test simpler strategies such as BuyAndHoldStrategy.
     """
 
-    def __init__(self, data_handler, event_queue, start_date, initial_capital=100000.0):
+    def __init__(self, price_handler, event_queue, start_date, initial_capital=100000.0):
         """
-        Initialises the portfolio with a data handler and an event queue.
+        Initialises the portfolio with a price handler and an event queue.
         Also includes a starting datetime index and initial capital
         (USD unless otherwise stated).
-
-        Args:
-            data_handler: The DataHandler object with current market data
-            event_queue: The EventQueue object
-            start_date: The start date (bar) of the portfolio
-            initial_capital: The starting capital in USD
         """
-        self.data_handler = data_handler
+        self.price_handler = price_handler
         self.event_queue = event_queue
-        self.symbol_list = self.data_handler.symbol_list
+        self.symbols = self.price_handler.symbols
         self.start_date = start_date
         self.initial_capital = initial_capital
 
@@ -65,14 +59,14 @@ class NaivePortfolio(BasePortfolio):
         Makes use of a MarketEvent from the events queue.
         """
         bars = {}
-        for s in self.symbol_list:
-            bars[s] = self.data_handler.get_latest_bars(s, N=1)
+        for s in self.symbols:
+            bars[s] = self.price_handler.get_latest_bars(s, num_bars=1)
 
         # Update positions
         dp = self._construct_positions_list()
-        dp['datetime'] = bars[self.symbol_list[0]][0][1]
+        dp['datetime'] = bars[self.symbols[0]][0][1]
 
-        for s in self.symbol_list:
+        for s in self.symbols:
             dp[s] = self.current_positions[s]
 
         # Append the current positions
@@ -80,12 +74,12 @@ class NaivePortfolio(BasePortfolio):
 
         # Update holdings
         dh = self._construct_holdings_list()
-        dh['datetime'] = bars[self.symbol_list[0]][0][1]
+        dh['datetime'] = bars[self.symbols[0]][0][1]
         dh['cash'] = self.current_holdings['cash']
         dh['commission'] = self.current_holdings['commission']
         dh['total'] = self.current_holdings['cash']
 
-        for s in self.symbol_list:
+        for s in self.symbols:
             # Approximation to the real value
             market_value = self.current_positions[s] * bars[s][0][5]
             dh[s] = market_value
@@ -110,14 +104,14 @@ class NaivePortfolio(BasePortfolio):
         Use dictionary comprehension to create a dictionary for each symbol
         and set the value to zero for each.
         """
-        return dict((k, v) for k, v in [(s, 0) for s in self.symbol_list])
+        return dict((k, v) for k, v in [(s, 0) for s in self.symbols])
 
     def _construct_holdings_list(self):
         """
         Use dictionary comprehension to create a dictionary for each symbol
         and set the value to zero for each.
         """
-        return dict((k, v) for k, v in [(s, 0.0) for s in self.symbol_list])
+        return dict((k, v) for k, v in [(s, 0.0) for s in self.symbols])
 
     def _construct_all_positions(self):
         """
@@ -185,7 +179,7 @@ class NaivePortfolio(BasePortfolio):
             fill_dir = -1
 
         # Update the holdings list with new quantities
-        fill_cost = self.data_handler.get_latest_bars(fill.symbol)[0][5]  # Close price
+        fill_cost = self.price_handler.get_latest_bars(fill.symbol)[0][5]  # Close price
         cost = fill_dir * fill_cost * fill.quantity
         self.current_holdings[fill.symbol] += cost
         self.current_holdings['commission'] += fill.commission

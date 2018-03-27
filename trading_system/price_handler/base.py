@@ -17,9 +17,9 @@ class BasePriceHandler:
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def get_latest_bars(self, symbol, N=1):
+    def get_latest_bars(self, symbol, num_bars=1):
         """
-        Returns the last N bars from the latest_symbol list,
+        Returns the last num_bars bars from the latest_symbol list,
         or fewer if less bars are available.
         """
         raise NotImplementedError("Should implement get_latest_bars()")

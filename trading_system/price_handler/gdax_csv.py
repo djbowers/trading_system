@@ -16,7 +16,7 @@ class GdaxCsvPriceHandler(BasePriceHandler):
     trading interface.
     """
 
-    def __init__(self, event_queue, csv_dir, symbol_list):
+    def __init__(self, event_queue, csv_dir, symbols):
         """
         Initialises the historic data handler by requesting
         the location of the CSV files and a list of symbols.
@@ -24,20 +24,22 @@ class GdaxCsvPriceHandler(BasePriceHandler):
         It will be assumed that all files are of the form
         'symbol.csv', where symbol is a string in the list.
 
-        symbol_data is a pandas dataframe constructed directly from the csv file containing all
-        of the available data for that symbol.
+        symbol_data:
+            Pandas DataFrame constructed directly from the csv file
+            containing all of the available data for that symbol
 
-        latest_symbol_data is a formatted dataframe constructed one at a time from new bars that
-        get added to it from symbol_data.
+        latest_symbol_data:
+            Formatted Pandas DataFrame constructed one at a time
+            from new bars that get added to it from symbol_data
 
         Args:
             event_queue: The EventQueue object
             csv_dir: Absolute directory path to the CSV files
-            symbol_list: A list of symbol strings
+            symbols: A list of symbol strings
         """
         self.event_queue = event_queue
         self.csv_dir = csv_dir
-        self.symbol_list = symbol_list
+        self.symbols = symbols
 
         self.symbol_data = {}
         self.latest_symbol_data = {}
@@ -45,24 +47,24 @@ class GdaxCsvPriceHandler(BasePriceHandler):
 
         self._open_convert_csv_files()
 
-    def get_latest_bars(self, symbol, N=1):
+    def get_latest_bars(self, symbol, num_bars=1):
         """
-        Returns the latest N bars from the latest symbol data dict,
-        or N-k if less available.
+        Returns the latest num_bars from latest_symbol_data,
+        or (num_bars - k) if less k available.
         """
         try:
             bars_list = self.latest_symbol_data[symbol]
         except KeyError:
             raise SymbolError("That symbol is not available in the historical data set.")
         else:
-            return bars_list[-N:]
+            return bars_list[-num_bars:]
 
     def update_bars(self):
         """
         Pushes the latest price bar to the latest_symbol_data structure
         for all symbols in the symbol list.
         """
-        for symbol in self.symbol_list:
+        for symbol in self.symbols:
             try:
                 bar = self._get_new_bar(symbol)
             except StopIteration:
@@ -78,7 +80,7 @@ class GdaxCsvPriceHandler(BasePriceHandler):
         them into pandas DataFrames within a symbol dictionary.
         """
         combined_index = None
-        for symbol in self.symbol_list:
+        for symbol in self.symbols:
             self._load_csv_file(symbol)
             combined_index = self._combine_index(symbol, combined_index)
             self._set_latest_symbol_data_to_none(symbol)
@@ -101,7 +103,7 @@ class GdaxCsvPriceHandler(BasePriceHandler):
         self.latest_symbol_data[symbol] = []
 
     def _reindex_dataframes(self, combined_index):
-        for symbol in self.symbol_list:
+        for symbol in self.symbols:
             self.symbol_data[symbol] = self.symbol_data[symbol].reindex(index=combined_index, method='pad').iterrows()
 
     def _get_new_bar(self, symbol):

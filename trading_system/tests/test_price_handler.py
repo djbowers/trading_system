@@ -1,11 +1,11 @@
 import unittest
-
-from .. import price_handler
-from ..price_handler import DataType, SymbolError
-from ..event_queue import EventQueue
-from . import TEST_DATA_DIR, SYMBOLS
-from ..events import MarketEvent
 from queue import Empty as EmptyQueue
+
+from . import TEST_DATA_DIR, SYMBOLS
+from .. import price_handler
+from ..event_queue import EventQueue
+from ..events import MarketEvent
+from ..price_handler import DataType, SymbolError
 
 
 class TestGdaxCsvPriceHandler(unittest.TestCase):
@@ -20,6 +20,7 @@ class TestGdaxCsvPriceHandler(unittest.TestCase):
         self.price_handler = price_handler.create(DataType.GDAX_CSV, EventQueue(), TEST_DATA_DIR, SYMBOLS)
 
     def test_get_latest_bars_with_invalid_symbol(self):
+        """Test that a Symbol Error is raised when get_latest_bars() is passed an invalid symbol."""
         self.assertRaises(SymbolError, self.price_handler.get_latest_bars, 'XRP',
                           "XRP is not a valid symbol.")
 
@@ -36,6 +37,7 @@ class TestGdaxCsvPriceHandler(unittest.TestCase):
                               "The next event in the queue was not a market event.")
 
     def test_get_first_bar_time_btc(self):
+        """Test that we can get the first bar from a CSV file."""
         self.price_handler.update_bars()
 
         latest_bars = self.price_handler.get_latest_bars('BTC')
@@ -47,6 +49,7 @@ class TestGdaxCsvPriceHandler(unittest.TestCase):
                          "First bar does not match values from CSV file.")
 
     def test_get_fifth_bar_time_btc(self):
+        """Test that we can get the fifth bar from a CSV file."""
         self.price_handler.update_bars()
 
         latest_bars = self.price_handler.get_latest_bars('BTC')

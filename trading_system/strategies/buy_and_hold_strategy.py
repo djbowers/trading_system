@@ -37,7 +37,7 @@ class BuyAndHoldStrategy(BaseStrategy):
         """
         if event.type == 'MARKET':
             for s in self.symbol_list:
-                bars = self.data_handler.get_latest_bars(s, N=1)
+                bars = self.data_handler.get_latest_bars(s, num_bars=1)
                 if bars is not None and bars != []:
                     if not self.bought[s]:
                         # (Symbol, Datetime, Type = LONG, SHORT or EXIT)
