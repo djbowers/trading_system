@@ -1,16 +1,14 @@
 import unittest
-
-from .. import portfolios
-from ..portfolios import PortfolioType
-from ..event_queue import EventQueue
-from ..price_handler.base import BasePriceHandler
 from datetime import datetime
-from . import SYMBOLS
+
+from trading_system import portfolio
+from trading_system.event_queue import EventQueue
+from trading_system.price.handler.base import BasePriceHandler
 
 
 class PriceHandlerMock(BasePriceHandler):
     def __init__(self):
-        self.symbols = SYMBOLS
+        self.symbols = ['BTC', 'ETH', 'LTC']  # todo: replace with config.SYMBOLS
 
     def get_latest_bars(self, symbol, num_bars=1):
         return None
@@ -23,7 +21,7 @@ class TestNaivePortfolio(unittest.TestCase):
 
     def setUp(self):
         self.start_date = datetime(2018, 3, 25, 23, 3, 4, 18896)
-        self.portfolio = portfolios.create(PortfolioType.NAIVE, PriceHandlerMock(), EventQueue(), datetime.now())
+        self.portfolio = portfolio.create_portfolio(portfolio.PortfolioType.NAIVE, PriceHandlerMock(), EventQueue(), datetime.now())
 
     def test_all_positions_start_date(self):
         portfolio_start_date = self.portfolio.all_holdings['datetime']

@@ -1,4 +1,5 @@
-from .base_event import BaseEvent
+from . import EventType
+from .base import BaseEvent
 
 
 class FillEvent(BaseEvent):
@@ -29,7 +30,7 @@ class FillEvent(BaseEvent):
             commission: An optional commission sent from IB.
         """
 
-        self.type = 'FILL'
+        self.type = EventType.FILL
         self.timeindex = timeindex
         self.symbol = symbol
         self.exchange = exchange

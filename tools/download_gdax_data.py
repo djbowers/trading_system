@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-from config import data_dir
+from config import PRICE_DATA_LOCATION
 from trading_system.gdax import GDAX
 
 SYMBOL = 'LTC'
@@ -21,9 +21,9 @@ def get_data_frame(start, end, granularity):
 
 
 def save_to_csv(data_frame):
-    if not os.path.exists(data_dir):
-        os.mkdir(data_dir)
-    data_frame.to_csv(os.path.join(data_dir, '{}.csv'.format(SYMBOL)))
+    if not os.path.exists(PRICE_DATA_LOCATION):
+        os.mkdir(PRICE_DATA_LOCATION)
+    data_frame.to_csv(os.path.join(PRICE_DATA_LOCATION, '{}.csv'.format(SYMBOL)))
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
-from .base_strategy import BaseStrategy
-from ..events import SignalEvent
+from trading_system.event import SignalEvent, EventType
+from .base import BaseStrategy
 
 
 class BuyAndHoldStrategy(BaseStrategy):
@@ -35,7 +35,7 @@ class BuyAndHoldStrategy(BaseStrategy):
         Args:
             event: A MarketEvent object.
         """
-        if event.type == 'MARKET':
+        if event.type == EventType.MARKET:
             for s in self.symbol_list:
                 bars = self.data_handler.get_latest_bars(s, num_bars=1)
                 if bars is not None and bars != []:

@@ -1,4 +1,5 @@
-from .base_event import BaseEvent
+from . import EventType
+from .base import BaseEvent
 
 
 class SignalEvent(BaseEvent):
@@ -17,7 +18,7 @@ class SignalEvent(BaseEvent):
             signal_type: 'LONG' or 'SHORT'
         """
 
-        self.type = 'SIGNAL'
+        self.type = EventType.SIGNAL
         self.symbol = symbol
         self.datetime = datetime
         self.signal_type = signal_type

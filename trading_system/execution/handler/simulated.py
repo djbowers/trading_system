@@ -1,7 +1,7 @@
 import datetime
 
-from ..events import FillEvent
-from .base_execution_handler import BaseExecutionHandler
+from trading_system.event import FillEvent, EventType
+from .base import BaseExecutionHandler
 
 
 class SimulatedExecutionHandler(BaseExecutionHandler):
@@ -33,7 +33,7 @@ class SimulatedExecutionHandler(BaseExecutionHandler):
         Args:
             event: Contains an Event object with order information.
         """
-        if event.type == 'ORDER':
+        if event.type == EventType.ORDER:
             fill_event = FillEvent(datetime.datetime.utcnow(), event.symbol,
                                    'BTC', event.quantity, event.direction, None)
             self.event_queue.put(fill_event)

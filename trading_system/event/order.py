@@ -1,4 +1,5 @@
-from .base_event import BaseEvent
+from . import EventType
+from .base import BaseEvent
 
 
 class OrderEvent(BaseEvent):
@@ -20,7 +21,7 @@ class OrderEvent(BaseEvent):
             direction: 'BUY' or 'SELL' for long or short.
         """
 
-        self.type = 'ORDER'
+        self.type = EventType.ORDER
         self.symbol = symbol
         self.order_type = order_type
         self.quantity = quantity

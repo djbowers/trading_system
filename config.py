@@ -1,6 +1,5 @@
 import os
-base_dir = os.path.abspath(os.path.dirname(__file__))
-data_dir = os.path.join(base_dir, 'data')
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
@@ -11,11 +10,17 @@ class Config:
 
 
 class DevelopmentConfig(Config):
-    pass
+    DEBUG = True
+    DATA_DIR = os.path.join(BASE_DIR, 'data')
+    PRICE_DIR = os.path.join(DATA_DIR, 'price')
 
 
 class TestingConfig(Config):
-    pass
+    TESTING = True
+    TEST_DIR = os.path.join(BASE_DIR, 'test')
+    DATA_DIR = os.path.join(TEST_DIR, 'data')
+    PRICE_DIR = os.path.join(DATA_DIR, 'price')
+    SYMBOLS = ['BTC', 'ETH', 'LTC']
 
 
 class ProductionConfig(Config):

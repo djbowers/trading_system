@@ -31,7 +31,3 @@ class BasePriceHandler:
         for all symbols in the symbol list.
         """
         raise NotImplementedError("Should implement update_bars()")
-
-
-class SymbolError(KeyError):
-    pass

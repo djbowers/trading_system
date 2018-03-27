@@ -2,8 +2,8 @@ from math import floor
 
 import pandas as pd
 
-from .base_portfolio import BasePortfolio
-from ..events import OrderEvent
+from trading_system.event import OrderEvent, EventType
+from .base import BasePortfolio
 
 
 class NaivePortfolio(BasePortfolio):
@@ -37,7 +37,7 @@ class NaivePortfolio(BasePortfolio):
         Acts on a SignalEvent to generate new orders
         based on the portfolio logic.
         """
-        if event.type == 'SIGNAL':
+        if event.type == EventType.SIGNAL:
             order_event = self._generate_naive_order(event)
             self.event_queue.put(order_event)
 
@@ -46,7 +46,7 @@ class NaivePortfolio(BasePortfolio):
         Updates the portfolio current positions and holdings
         from a FillEvent.
         """
-        if event.type == 'FILL':
+        if event.type == EventType.FILL:
             self._update_positions_from_fill(event)
             self._update_holdings_from_fill(event)
 

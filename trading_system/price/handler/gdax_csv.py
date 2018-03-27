@@ -3,17 +3,16 @@ import os.path
 
 import pandas as pd
 
-from .base import BasePriceHandler, SymbolError
-from ..events import MarketEvent
+from .base import BasePriceHandler
+from . import SymbolError
+from trading_system.event import MarketEvent, EventType
 from time import gmtime, strftime
 
 
-class GdaxCsvPriceHandler(BasePriceHandler):
+class GDAXCSVPriceHandler(BasePriceHandler):
     """
-    HistoricCSVDataHandler is designed to read CSV files for
-    each requested symbol from disk and provide an interface
-    to obtain the "latest" price bar in a manner identical to a live
-    trading interface.
+    Designed to read CSV files for each requested symbol from disk and
+    provide an interface to obtain the "latest" price bar.
     """
 
     def __init__(self, event_queue, csv_dir, symbols):

@@ -1,4 +1,5 @@
-from .base_event import BaseEvent
+from . import EventType
+from .base import BaseEvent
 
 
 class MarketEvent(BaseEvent):
@@ -10,4 +11,4 @@ class MarketEvent(BaseEvent):
         """
         Initializes the MarketEvent.
         """
-        self.type = 'MARKET'
+        self.type = EventType.MARKET
