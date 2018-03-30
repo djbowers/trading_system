@@ -1,6 +1,6 @@
-from enum import Enum
-
 from .backtesting import BacktestingSession
+from .base import BaseTradingSession
+from .type import SessionType
 
 
 def create_session(trading_type, *args, **kwargs):
@@ -10,8 +10,3 @@ def create_session(trading_type, *args, **kwargs):
         pass
     else:
         raise ImportError('{} is not a valid session type.'.format(trading_type))
-
-
-class SessionType(Enum):
-    BACKTESTING: 1
-    LIVE: 2

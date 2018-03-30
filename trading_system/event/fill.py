@@ -1,5 +1,5 @@
-from . import EventType
 from .base import BaseEvent
+from .type import EventType
 
 
 class FillEvent(BaseEvent):

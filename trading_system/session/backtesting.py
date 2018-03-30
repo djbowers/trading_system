@@ -2,9 +2,10 @@ import queue
 import time
 
 from trading_system.event import EventType
+from .base import BaseTradingSession
 
 
-class BacktestingSession:
+class BacktestingSession(BaseTradingSession):
     """
     Represents a simulated trading session used for backtesting.
     """

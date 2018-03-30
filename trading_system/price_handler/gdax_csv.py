@@ -1,12 +1,12 @@
 import os
 import os.path
+from time import gmtime, strftime
 
 import pandas as pd
 
+from trading_system.error import SymbolError
+from trading_system.event import MarketEvent
 from .base import BasePriceHandler
-from . import SymbolError
-from trading_system.event import MarketEvent, EventType
-from time import gmtime, strftime
 
 
 class GDAXCSVPriceHandler(BasePriceHandler):

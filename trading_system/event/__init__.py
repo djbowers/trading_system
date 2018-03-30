@@ -1,9 +1,9 @@
-from enum import Enum
-
+from .base import BaseEvent
 from .fill import FillEvent
 from .market import MarketEvent
 from .order import OrderEvent
 from .signal import SignalEvent
+from .type import EventType
 
 
 def create_event(event_type, *args, **kwargs):
@@ -17,10 +17,3 @@ def create_event(event_type, *args, **kwargs):
         return FillEvent(*args, **kwargs)
     else:
         raise ImportError('{} is not a valid event type.'.format(event_type))
-
-
-class EventType(Enum):
-    MARKET = 1
-    SIGNAL = 2
-    ORDER = 3
-    FILL = 4

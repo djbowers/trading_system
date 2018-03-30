@@ -1,6 +1,6 @@
-from enum import Enum
-
+from .base import BaseExecutionHandler
 from .simulated import SimulatedExecutionHandler
+from .type import ExecutionType
 
 
 def create_handler(execution_type, *args, **kwargs):
@@ -8,7 +8,3 @@ def create_handler(execution_type, *args, **kwargs):
         return SimulatedExecutionHandler(*args, **kwargs)
     else:
         raise ImportError('{} is not a valid execution handler.'.format(execution_type))
-
-
-class ExecutionType(Enum):
-    SIMULATED: 1
