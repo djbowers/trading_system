@@ -3,16 +3,14 @@ from .event import Event
 
 class OrderEvent(Event):
     """
-    Handles the event of sending an Order to an execution system.
-    The order contains a symbol (e.g. GOOG), a type (market or limit),
-    quantity and a direction.
+    Handles the event of sending an order to an execution system.
     """
 
-    def __init__(self, symbol, order_type, quantity, direction):
+    def __init__(self, symbol: str, order_type: str, quantity: float, direction: str):
         """
-        symbol: The instrument to trade
+        symbol: The instrument to trade (e.g. 'BTC')
         order_type: 'MKT' or 'LMT' for Market or Limit
-        quantity: Non-negative integer for quantity
+        quantity: Non-negative float for quantity
         direction: 'BUY' or 'SELL' for long or short
         """
 

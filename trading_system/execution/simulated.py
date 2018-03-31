@@ -1,4 +1,4 @@
-from datetime import datetime
+import time
 
 from trading_system.events import FillEvent, OrderEvent, EventQueue
 from .execution_handler import ExecutionHandler
@@ -19,5 +19,7 @@ class SimulatedExecutionHandler(ExecutionHandler):
         self.events = events
 
     def execute_order(self, event: OrderEvent):
-        fill_event = FillEvent(datetime.utcnow(), event.symbol, 'BTC', event.quantity, event.direction, None)
+        """Creates a fake FillEvent and adds it to the event queue."""
+        fill_event = FillEvent(int(time.time()), event.symbol, event.quantity,
+                               event.direction, fill_cost=0, exchange='GDAX')
         self.events.add_event(fill_event)
