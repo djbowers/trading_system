@@ -25,7 +25,7 @@ class TestGDAXCSVPriceHandler(unittest.TestCase):
         self.price_handler.update_bars()
         event_queue = self.price_handler.events
         try:
-            event = event_queue.get_next_event()
+            event = event_queue.maybe_get_next_event()
         except EmptyQueue:
             event = None
 

@@ -1,4 +1,4 @@
-from abc import ABCMeta
+from abc import ABCMeta, abstractmethod
 
 
 class Engine:
@@ -8,3 +8,10 @@ class Engine:
     """
 
     __metaclass__ = ABCMeta
+
+    @abstractmethod
+    def start(self):
+        """
+        Start the trading engine.
+        """
+        raise NotImplementedError("Should implement run()")

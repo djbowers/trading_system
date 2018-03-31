@@ -1,22 +1,22 @@
-import queue
 import time
 
-from trading_system.events import SignalEvent, FillEvent, MarketEvent, OrderEvent
+from trading_system.events import SignalEvent, FillEvent, MarketEvent, OrderEvent, EventQueue
 from .engine import Engine
-
+from trading_system.strategy import Strategy
+from trading_system.execution import ExecutionHandler
 
 class BacktestingEngine(Engine):
     """
     Represents a simulated trading session used for backtesting.
     """
-    def __init__(self, data_handler, event_queue, strategy, portfolio, execution_handler):
+    def __init__(self, data_handler, events: EventQueue, strategy, portfolio_handler, execution_handler):
         self.data_handler = data_handler
-        self.event_queue = event_queue
+        self.events = events
         self.strategy = strategy
-        self.portfolio = portfolio
+        self.portfolio_handler = portfolio_handler
         self.execution_handler = execution_handler
 
-    def run(self):
+    def start(self):
         while True:
             # Update the bars (specific backtest code, as opposed to live trading)
             if self.data_handler.continue_backtest:
@@ -24,10 +24,10 @@ class BacktestingEngine(Engine):
             else:
                 break
 
-            self.handle_events()
-            self.wait_for_update(1)
+            self._handle_events()
+            self._wait_for_update()
 
-    def handle_events(self):
+    def _handle_events(self):
         """
         Inner event-loop that actually handles the events from the
         EventQueue object. Specific events are delegated to
@@ -36,29 +36,27 @@ class BacktestingEngine(Engine):
         heartbeat loop continues.
         """
         while True:
-            try:
-                event = self.event_queue.get(False)
-            except queue.Empty:
-                break
+            event = self.events.maybe_get_next_event()
+            if event:
+                if isinstance(event, MarketEvent):
+                    self.strategy.calculate_signals(event)
+                    self.portfolio_handler.update_timeindex(event)
+
+                elif isinstance(event, SignalEvent):
+                    self.portfolio_handler.update_signal(event)
+
+                elif isinstance(event, OrderEvent):
+                    self.execution_handler.execute_order(event)
+
+                elif isinstance(event, FillEvent):
+                    self.portfolio_handler.update_fill(event)
             else:
-                if event is not None:
-                    if isinstance(event, MarketEvent):
-                        self.strategy.calculate_signals(event)
-                        self.portfolio.update_timeindex(event)
-
-                    elif isinstance(event, SignalEvent):
-                        self.portfolio.update_signal(event)
-
-                    elif isinstance(event, OrderEvent):
-                        self.execution_handler.execute_order(event)
-
-                    elif isinstance(event, FillEvent):
-                        self.portfolio.update_fill(event)
+                break
 
     @staticmethod
-    def wait_for_update(wait_time):
+    def _wait_for_update(wait_time=0):
         """
         Wait a specified amount of time before the next update, where wait_time
-        is in minutes.
+        is in seconds and defaults to 0.
         """
-        time.sleep(wait_time * 60)
+        time.sleep(wait_time)

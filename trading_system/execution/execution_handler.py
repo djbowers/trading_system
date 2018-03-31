@@ -1,5 +1,7 @@
 from abc import ABCMeta, abstractmethod
 
+from trading_system.events import OrderEvent
+
 
 class ExecutionHandler:
     """
@@ -14,7 +16,7 @@ class ExecutionHandler:
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def execute_order(self, event):
+    def execute_order(self, event: OrderEvent):
         """
         Takes an OrderEvent object and executes it, producing
         a FillEvent object that gets placed onto the EventQueue.

@@ -9,7 +9,7 @@ class FillEvent(Event):
     """
 
     def __init__(self, timeindex, symbol, exchange, quantity,
-                 direction, fill_cost, fee):
+                 direction, fill_cost, fee=None):
         """
         timeindex: The bar-resolution when the order was filled
         symbol: The instrument which was filled

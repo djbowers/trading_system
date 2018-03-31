@@ -15,8 +15,8 @@ class SimulatedExecutionHandler(ExecutionHandler):
     handler.
     """
 
-    def __init__(self, event_queue: EventQueue):
-        self.events = event_queue
+    def __init__(self, events: EventQueue):
+        self.events = events
 
     def execute_order(self, event: OrderEvent):
         fill_event = FillEvent(datetime.utcnow(), event.symbol, 'BTC', event.quantity, event.direction, None)

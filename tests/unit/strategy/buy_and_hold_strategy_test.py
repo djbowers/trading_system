@@ -17,7 +17,7 @@ class TestBuyAndHoldStrategyTest(unittest.TestCase):
 
     def test_calculate_signals_adds_signal_event_to_event_queue(self):
         self.strategy.calculate_signals(MarketEvent())
-        event = self.events.get_next_event()
+        event = self.events.maybe_get_next_event()
         self.assertIsInstance(event, SignalEvent,
                               'The strategy did not correctly add a signal event to the event queue')
 
