@@ -9,7 +9,7 @@ class FillEvent(Event):
     """
 
     def __init__(self, timeindex, symbol, quantity,
-                 direction, fill_cost, exchange, fee=None):
+                 direction, fill_cost, exchange, fee=0.0):
         """
         timeindex: The bar-resolution when the order was filled
         symbol: The instrument which was filled
@@ -23,7 +23,16 @@ class FillEvent(Event):
         self.timeindex = timeindex
         self.symbol = symbol
         self.quantity = quantity
-        self.direction = direction
+        self._direction = direction
         self.fill_cost = fill_cost
         self.exchange = exchange
         self.fee = fee
+
+    @property
+    def fill_dir(self):
+        if self._direction == 'BUY':
+            return 1
+        elif self._direction == 'SELL':
+            return -1
+        else:
+            raise ValueError("The event direction was set as something other than BUY or SELL.")

@@ -9,7 +9,7 @@ class SignalEvent(Event):
 
     def __init__(self, symbol, datetime, signal_type):
         """
-        symbol: The ticker symbol, e.g. 'GOOG'.
+        symbol: The ticker symbol, e.g. 'BTC'.
         datetime: The timestamp at which the signal was generated.
         signal_type: 'LONG' or 'SHORT'
         """

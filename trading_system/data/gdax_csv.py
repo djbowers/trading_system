@@ -1,3 +1,4 @@
+import os
 from time import gmtime, strftime
 
 import pandas as pd
@@ -5,7 +6,6 @@ import pandas as pd
 from trading_system.errors import SymbolError
 from trading_system.events import MarketEvent, EventQueue
 from .data_handler import DataHandler
-import utils
 
 
 class GDAXCSVDataHandler(DataHandler):
@@ -93,7 +93,7 @@ class GDAXCSVDataHandler(DataHandler):
         for symbol in self.symbols:
 
             # Load the CSV file, indexed on time.
-            csv_file = utils.join_paths(self.csv_dir, '{}.csv'.format(symbol))
+            csv_file = os.path.join(self.csv_dir, '{}.csv'.format(symbol))
             self.symbol_data[symbol] = pd.read_csv(csv_file, index_col=0)
 
             # Combine the index to pad forward values.

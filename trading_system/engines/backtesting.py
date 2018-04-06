@@ -2,8 +2,7 @@ import time
 
 from trading_system.events import SignalEvent, FillEvent, MarketEvent, OrderEvent, EventQueue
 from .engine import Engine
-from trading_system.strategy import Strategy
-from trading_system.execution import ExecutionHandler
+
 
 class BacktestingEngine(Engine):
     """
@@ -40,16 +39,16 @@ class BacktestingEngine(Engine):
             if event:
                 if isinstance(event, MarketEvent):
                     self.strategy.calculate_signals(event)
-                    self.portfolio_handler.update_timeindex(event)
+                    self.portfolio_handler.update_portfolio(event)
 
                 elif isinstance(event, SignalEvent):
-                    self.portfolio_handler.update_signal(event)
+                    self.portfolio_handler.update_on_signal(event)
 
                 elif isinstance(event, OrderEvent):
                     self.execution_handler.execute_order(event)
 
                 elif isinstance(event, FillEvent):
-                    self.portfolio_handler.update_fill(event)
+                    self.portfolio_handler.update_on_fill(event)
             else:
                 break
 

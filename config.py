@@ -1,4 +1,4 @@
-import utils
+import os
 
 
 class Config:
@@ -7,7 +7,7 @@ class Config:
     between environments should be declared here as global class constants.
     """
 
-    BASE_DIR = utils.BASE_DIR
+    BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 
 class DevelopmentConfig(Config):
@@ -16,7 +16,7 @@ class DevelopmentConfig(Config):
     potential future features for developers.
     """
 
-    DATA_DIR = utils.join_paths(Config.BASE_DIR, 'data')
+    DATA_DIR = os.path.join(Config.BASE_DIR, 'data')
     SYMBOLS = []
 
 
@@ -25,7 +25,7 @@ class TestingConfig(Config):
     This configuration will be used for testing purposes, including unit tests.
     """
 
-    DATA_DIR = utils.join_paths(Config.BASE_DIR, 'tests/data')
+    DATA_DIR = os.path.join(Config.BASE_DIR, 'test/data')
     SYMBOLS = ['BTC', 'ETH', 'LTC']
 
 
