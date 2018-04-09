@@ -13,8 +13,7 @@ class TestExecutionHandler(unittest.TestCase):
         order_event = OrderEvent('BTC', 'MKT', 1, 'BUY')
         self.execution_handler.execute_order(order_event)
         fill_event = self.events.maybe_get_next_event()
-        self.assertIsInstance(fill_event, FillEvent,
-                              "The correct event type was not added to the queue.")
+        self.assertIsInstance(fill_event, FillEvent)
 
 
 if __name__ == '__main__':
