@@ -22,4 +22,4 @@ class Strategy:
         """
         Provides the mechanisms to calculate the list of signals.
         """
-        raise NotImplementedError("Should implement calculate_signals()")
+        raise NotImplementedError

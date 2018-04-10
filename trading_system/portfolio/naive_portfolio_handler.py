@@ -13,31 +13,14 @@ class NaivePortfolioHandler(PortfolioHandler):
     used to test simpler strategies such as BuyAndHoldStrategy.
     """
 
-    def __init__(self, events: EventQueue, symbols, start_date, initial_capital=100000.0):
+    def __init__(self, events: EventQueue, portfolio):
         """
         Initialises the portfolio with a price handler and an event queue.
         Also includes a starting datetime index and initial capital
         (USD unless otherwise stated).
         """
         self.events = events
-        self.start_date = start_date
-        self.initial_capital = initial_capital
-        self.equity_curve = None
-
-        self.current_positions = {symbol: 0 for symbol in symbols}
-
-        self.all_positions = [
-            dict(self.current_positions, **{'datetime': self.start_date})
-        ]
-
-        self.current_holdings = dict({symbol: 0.0 for symbol in symbols},
-                                     **{'cash': self.initial_capital,
-                                        'fees': 0.0,
-                                        'total': self.initial_capital})
-
-        self.all_holdings = [
-            dict(self.current_holdings, **{'datetime': self.start_date})
-        ]
+        self.portfolio = portfolio
 
     def update_on_signal(self, event: SignalEvent):
         """
@@ -70,7 +53,7 @@ class NaivePortfolioHandler(PortfolioHandler):
         """
         Creates a pandas DataFrame from the all_holdings list of dictionaries.
         """
-        curve = pd.DataFrame(self.all_holdings)
+        curve = pd.DataFrame(self.portfolio.all_holdings)
         curve.set_index('datetime', inplace=True)
         curve['returns'] = curve['total'].pct_change()
         curve['equity_curve'] = (1.0+curve['returns']).cumprod()
@@ -106,7 +89,7 @@ class NaivePortfolioHandler(PortfolioHandler):
         direction = event.signal_type
 
         mkt_quantity = 100
-        cur_quantity = self.current_positions[symbol]
+        cur_quantity = self.portfolio.current_positions[symbol]
         order_type = 'MKT'
 
         if direction == 'LONG' and cur_quantity == 0:
@@ -124,7 +107,7 @@ class NaivePortfolioHandler(PortfolioHandler):
         """
         Takes a FillEvent object and updates the position matrix to reflect the new position.
         """
-        self.current_positions[event.symbol] += event.fill_dir * event.quantity
+        self.portfolio.current_positions[event.symbol] += event.fill_dir * event.quantity
 
     def _update_current_holdings(self, event: FillEvent):
         """
@@ -132,29 +115,29 @@ class NaivePortfolioHandler(PortfolioHandler):
         """
         cost = event.fill_dir * event.fill_cost * event.quantity
 
-        self.current_holdings[event.symbol] += cost
-        self.current_holdings['fees'] += event.fee
-        self.current_holdings['cash'] -= (cost + event.fee)
-        self.current_holdings['total'] -= (cost + event.fee)
+        self.portfolio.current_holdings[event.symbol] += cost
+        self.portfolio.current_holdings['fees'] += event.fee
+        self.portfolio.current_holdings['cash'] -= (cost + event.fee)
+        self.portfolio.current_holdings['total'] -= (cost + event.fee)
 
     def _update_all_positions(self, symbol_data, timeindex):
         new_positions = {'datetime': timeindex}
         for symbol in symbol_data.keys():
-            new_positions[symbol] = self.current_positions[symbol]
-        self.all_positions.append(new_positions)
+            new_positions[symbol] = self.portfolio.current_positions[symbol]
+        self.portfolio.all_positions.append(new_positions)
 
     def _update_all_holdings(self, symbol_data, timeindex):
         """
         Updates holdings using the close price of the bar as the current market value.
         """
-        newest_holdings = {'datetime': timeindex, 'cash': self.current_holdings['cash'],
-                           'fees': self.current_holdings['fees'],
-                           'total': self.current_holdings['total']}
+        newest_holdings = {'datetime': timeindex, 'cash': self.portfolio.current_holdings['cash'],
+                           'fees': self.portfolio.current_holdings['fees'],
+                           'total': self.portfolio.current_holdings['total']}
 
         for symbol in symbol_data.keys():
             bars = symbol_data[symbol]
-            market_value = self.current_positions[symbol] * bars[0].close
+            market_value = self.portfolio.current_positions[symbol] * bars[0].close
             newest_holdings[symbol] = market_value
             newest_holdings['total'] += market_value
 
-        self.all_holdings.append(newest_holdings)
+        self.portfolio.all_holdings.append(newest_holdings)

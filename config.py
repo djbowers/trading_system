@@ -8,6 +8,8 @@ class Config:
     """
 
     BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+    DATA_DIR = None
+    SYMBOLS = None
 
 
 class DevelopmentConfig(Config):

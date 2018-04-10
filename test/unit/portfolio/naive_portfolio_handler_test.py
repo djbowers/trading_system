@@ -2,7 +2,7 @@ import unittest
 
 from config import TestingConfig
 from trading_system.event import EventQueue, SignalEvent, FillEvent, MarketEvent, EventType
-from trading_system.portfolio import NaivePortfolioHandler
+from trading_system.portfolio import NaivePortfolioHandler, Portfolio
 from trading_system.data import PriceBar
 
 
@@ -12,23 +12,24 @@ class TestNaivePortfolioHandler(unittest.TestCase):
         self.start_date = '2018-02-28 00:00:00'
         self.events = EventQueue()
         self.symbols = TestingConfig.SYMBOLS
-        self.portfolio_handler = NaivePortfolioHandler(self.events, self.symbols, self.start_date)
+        self.portfolio = Portfolio(self.symbols, self.start_date)
+        self.portfolio_handler = NaivePortfolioHandler(self.events, self.portfolio)
 
     def test_init_sets_current_positions(self):
-        self.assertEqual(self.portfolio_handler.current_positions,
+        self.assertEqual(self.portfolio_handler.portfolio.current_positions,
                          {'BTC': 0, 'ETH': 0, 'LTC': 0})
 
     def test_init_sets_all_positions(self):
-        self.assertEqual(self.portfolio_handler.all_positions,
+        self.assertEqual(self.portfolio_handler.portfolio.all_positions,
                          [{'BTC': 0, 'ETH': 0, 'LTC': 0, 'datetime': self.start_date}])
 
     def test_init_sets_current_holdings(self):
-        self.assertEqual(self.portfolio_handler.current_holdings,
+        self.assertEqual(self.portfolio_handler.portfolio.current_holdings,
                          {'BTC': 0.0, 'ETH': 0.0, 'LTC': 0.0, 'cash': 100000.0,
                           'fees': 0.0, 'total': 100000.0})
 
     def test_init_sets_all_holdings(self):
-        self.assertEqual(self.portfolio_handler.all_holdings,
+        self.assertEqual(self.portfolio_handler.portfolio.all_holdings,
                          [{'BTC': 0.0, 'ETH': 0.0, 'LTC': 0.0, 'datetime': self.start_date,
                            'cash': 100000.0, 'fees': 0.0, 'total': 100000.0}])
 
@@ -41,13 +42,13 @@ class TestNaivePortfolioHandler(unittest.TestCase):
     def test_update_fill_sets_current_positions(self):
         fill_event = FillEvent('2018-02-28 12:00:00', 'BTC', 10, 'BUY', 1000, 'GDAX')
         self.portfolio_handler.update_on_fill(fill_event)
-        self.assertEqual(self.portfolio_handler.current_positions,
+        self.assertEqual(self.portfolio_handler.portfolio.current_positions,
                          {'BTC': 10, 'ETH': 0, 'LTC': 0})
 
     def test_update_fill_sets_current_holdings(self):
         fill_event = FillEvent('2018-02-28 12:00:00', 'BTC', 10, 'BUY', 1000, 'GDAX')
         self.portfolio_handler.update_on_fill(fill_event)
-        self.assertEqual(self.portfolio_handler.current_holdings,
+        self.assertEqual(self.portfolio_handler.portfolio.current_holdings,
                          {'BTC': 10000.0, 'ETH': 0.0, 'LTC': 0.0, 'cash': 90000.0,
                           'fees': 0.0, 'total': 90000.0})
 
@@ -56,14 +57,14 @@ class TestNaivePortfolioHandler(unittest.TestCase):
         bar = PriceBar('2018-02-28 12:00:00', 0, 0, 0, 0, 0, symbol)
         market_event = MarketEvent({symbol: [bar]})
         self.portfolio_handler.update_portfolio(market_event)
-        self.assertEqual(len(self.portfolio_handler.all_positions), 2)
+        self.assertEqual(len(self.portfolio_handler.portfolio.all_positions), 2)
 
     def test_update_portfolio_adds_to_all_holdings(self):
         symbol = 'BTC'
         bar = PriceBar('2018-02-28 12:00:00', 0, 0, 0, 0, 0, symbol)
         market_event = MarketEvent({symbol: [bar]})
         self.portfolio_handler.update_portfolio(market_event)
-        self.assertEqual(len(self.portfolio_handler.all_holdings), 2)
+        self.assertEqual(len(self.portfolio_handler.portfolio.all_holdings), 2)
 
 
 if __name__ == '__main__':
