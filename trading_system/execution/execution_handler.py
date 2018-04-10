@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 
-from trading_system.events import OrderEvent
+from trading_system.event import OrderEvent
 
 
 class ExecutionHandler:

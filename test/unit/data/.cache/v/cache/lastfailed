@@ -1,0 +1,3 @@
+{
+  "gdax_csv_data_handler_test.py::TestGDAXCSVDataHandler::test_for_3_bars_from_get_latest_bars": true
+}

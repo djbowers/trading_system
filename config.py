@@ -17,7 +17,7 @@ class DevelopmentConfig(Config):
     """
 
     DATA_DIR = os.path.join(Config.BASE_DIR, 'data')
-    SYMBOLS = []
+    SYMBOLS = ['BTC', 'ETH', 'LTC']
 
 
 class TestingConfig(Config):
