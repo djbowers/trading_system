@@ -15,8 +15,8 @@ class TestBacktestingEngine(unittest.TestCase):
         portfolio_handler = Mock()
         execution_handler = Mock()
 
-        self.engine = engine.BacktestingEngine(data_handler, events, strategy,
-                                                portfolio_handler, execution_handler)
+        self.engine = engine.BacktestingEngine(events, data_handler, strategy,
+                                               portfolio_handler, execution_handler)
 
     def test_engine_starts(self):
         self.engine.start()

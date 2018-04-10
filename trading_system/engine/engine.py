@@ -14,4 +14,4 @@ class Engine:
         """
         Start the trading engine.
         """
-        raise NotImplementedError("Should implement run()")
+        raise NotImplementedError

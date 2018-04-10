@@ -19,10 +19,10 @@ class DataHandler:
     @abstractmethod
     def get_latest_bars(self, symbol, num_bars=1):
         """
-        Returns the last num_bars bars from the latest_symbol list,
-        or fewer if less bars are available.
+        Returns the last num_bars from the latest_symbol_data dict for the
+        given symbol, or fewer if less bars are available.
         """
-        raise NotImplementedError("Should implement get_latest_bars()")
+        raise NotImplementedError
 
     @abstractmethod
     def update_bars(self):
@@ -30,4 +30,4 @@ class DataHandler:
         Pushes the latest bar to the latest symbol structure
         for all symbols in the symbol list.
         """
-        raise NotImplementedError("Should implement update_bars()")
+        raise NotImplementedError

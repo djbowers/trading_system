@@ -14,11 +14,11 @@ events = EventQueue()
 csv_dir = DevelopmentConfig.DATA_DIR
 symbols = DevelopmentConfig.SYMBOLS
 
-data_handler = GDAXCSVDataHandler(events, csv_dir, symbols)
+data_handler = GDAXCSVDataHandler(events, symbols, csv_dir)
 execution_handler = SimulatedExecutionHandler(events)
 strategy = BuyAndHoldStrategy(events, symbols)
 portfolio_handler = NaivePortfolioHandler(events, symbols, datetime.utcnow())
 
-engine = BacktestingEngine(data_handler, events, strategy, portfolio_handler, execution_handler)
+engine = BacktestingEngine(events, data_handler, strategy, portfolio_handler, execution_handler)
 
 engine.start()

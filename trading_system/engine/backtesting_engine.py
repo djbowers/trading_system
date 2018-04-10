@@ -6,7 +6,7 @@ class BacktestingEngine(Engine):
     """
     Represents a simulated trading session used for backtesting.
     """
-    def __init__(self, data_handler, events: EventQueue, strategy, portfolio_handler, execution_handler):
+    def __init__(self, events: EventQueue, data_handler, strategy, portfolio_handler, execution_handler):
         self.data_handler = data_handler
         self.events = events
         self.strategy = strategy

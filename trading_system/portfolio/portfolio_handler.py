@@ -17,11 +17,11 @@ class PortfolioHandler:
         Acts on a SignalEvent to generate new orders based on the portfolio logic,
         producing an OrderEvent.
         """
-        raise NotImplementedError("Should implement update_signal()")
+        raise NotImplementedError
 
     @abstractmethod
     def update_on_fill(self, event: FillEvent):
         """
         Updates the portfolio current positions and holdings from a FillEvent.
         """
-        raise NotImplementedError("Should implement update_fill()")
+        raise NotImplementedError

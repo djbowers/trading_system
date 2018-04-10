@@ -21,4 +21,4 @@ class ExecutionHandler:
         Takes an OrderEvent object and executes it, producing
         a FillEvent object that gets placed onto the EventQueue.
         """
-        raise NotImplementedError("Should implement execute_order()")
+        raise NotImplementedError

@@ -12,14 +12,14 @@ class TestGDAXCSVDataHandler(unittest.TestCase):
         self.events = EventQueue()
         self.symbols = TestingConfig.SYMBOLS
         self.csv_dir = TestingConfig.DATA_DIR
-        self.data_handler = GDAXCSVDataHandler(self.events, self.csv_dir, self.symbols)
+        self.data_handler = GDAXCSVDataHandler(self.events, self.symbols, self.csv_dir)
 
     def test_for_symbol_error_when_get_latest_bars_given_invalid_symbol(self):
         self.assertRaises(SymbolError, self.data_handler.get_latest_bars, 'INVALID')
 
     def test_for_attribute_error_when_initialized_with_empty_symbols_param(self):
         symbols = []
-        self.assertRaises(AttributeError, GDAXCSVDataHandler, EventQueue(), self.csv_dir, symbols)
+        self.assertRaises(AttributeError, GDAXCSVDataHandler, EventQueue(), symbols, self.csv_dir)
 
     def test_for_market_event_after_update_bars(self):
         self.data_handler.update_bars()
@@ -42,3 +42,8 @@ class TestGDAXCSVDataHandler(unittest.TestCase):
             self.data_handler.update_bars()
         bars = self.data_handler.get_latest_bars('BTC', num_bars=3)
         self.assertEqual('2018-03-01 02:00:00', bars[2].time)
+
+    def test_that_update_bars_raises_stop_iteration(self):
+        for _ in range(25):
+            self.data_handler.update_bars()
+        self.assertEqual(self.data_handler.continue_backtest, False)

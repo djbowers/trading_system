@@ -16,7 +16,7 @@ class GDAXCSVDataHandler(DataHandler):
     provide an interface to obtain the "latest" price bar.
     """
 
-    def __init__(self, events: EventQueue, csv_dir, symbols):
+    def __init__(self, events: EventQueue, symbols, csv_dir):
         """
         It will be assumed that all csv files are of the form
         'symbol.csv', where symbol is a string in the list.
