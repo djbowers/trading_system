@@ -32,7 +32,3 @@ class DataHandlerMock(DataHandler):
 
     def update_bars(self):
         self.continue_backtest = False
-
-
-if __name__ == '__main__':
-    unittest.main()

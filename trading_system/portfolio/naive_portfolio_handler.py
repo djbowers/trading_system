@@ -56,17 +56,17 @@ class NaivePortfolioHandler(PortfolioHandler):
         curve = pd.DataFrame(self.portfolio.all_holdings)
         curve.set_index('datetime', inplace=True)
         curve['returns'] = curve['total'].pct_change()
-        curve['equity_curve'] = (1.0+curve['returns']).cumprod()
-        self.equity_curve = curve
+        curve['equity'] = (1.0+curve['returns']).cumprod()
+        self.portfolio.equity_curve = curve
 
     def output_summary_stats(self):
         """
         Creates a list of summary statistics for the portfolio such as
         Sharpe Ratio and drawdown information.
         """
-        total_return = self.equity_curve['equity_curve'][-1]
-        returns = self.equity_curve['returns']
-        pnl = self.equity_curve['equity_curve']
+        total_return = self.portfolio.equity_curve['equity'][-1]
+        returns = self.portfolio.equity_curve['returns']
+        pnl = self.portfolio.equity_curve['equity']
 
         sharpe_ratio = create_sharpe_returns(returns)
         max_dd, dd_duration = create_drawdowns(pnl)

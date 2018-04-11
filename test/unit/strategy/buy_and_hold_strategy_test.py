@@ -18,7 +18,3 @@ class TestBuyAndHoldStrategyTest(unittest.TestCase):
     #     self.strategy.calculate_signals(MarketEvent())
     #     event = self.events.maybe_get_next_event()
     #     self.assertEqual(event.type, 'SIGNAL')
-
-
-if __name__ == '__main__':
-    unittest.main()
