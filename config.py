@@ -27,7 +27,7 @@ class TestingConfig(Config):
     This configuration will be used for testing purposes, including unit tests.
     """
 
-    DATA_DIR = os.path.join(Config.BASE_DIR, 'test/data')
+    DATA_DIR = os.path.join(Config.BASE_DIR, 'trading_system/tests/data')
     SYMBOLS = ['BTC', 'ETH', 'LTC']
 
 
