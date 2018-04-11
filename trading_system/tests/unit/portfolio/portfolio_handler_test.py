@@ -12,3 +12,6 @@ class TestDataHandler(unittest.TestCase):
 
     def test_for_error_on_update_on_fill(self):
         self.assertRaises(NotImplementedError, self.portfolio_handler.update_on_fill, None)
+
+    def test_for_error_on_update_on_market(self):
+        self.assertRaises(NotImplementedError, self.portfolio_handler.update_on_market, None)

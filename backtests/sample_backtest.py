@@ -9,6 +9,7 @@ from trading_system.event import EventQueue
 from trading_system.execution import SimulatedExecutionHandler
 from trading_system.portfolio import NaivePortfolioHandler, Portfolio
 from trading_system.strategy import BuyAndHoldStrategy
+from trading_system.report import ReportHandler
 
 
 def run(config: Config = DevelopmentConfig()):
@@ -22,10 +23,12 @@ def run(config: Config = DevelopmentConfig()):
     strategy = BuyAndHoldStrategy(events, symbols)
     portfolio_handler = NaivePortfolioHandler(events, portfolio)
     execution_handler = SimulatedExecutionHandler(events)
+    report_handler = ReportHandler(portfolio)
 
-    engine = BacktestingEngine(events, data_handler, strategy, portfolio_handler, execution_handler)
+    engine = BacktestingEngine(events, data_handler, strategy, portfolio_handler,
+                               execution_handler, report_handler)
 
-    engine.start()
+    engine.run()
 
 
 if __name__ == '__main__':

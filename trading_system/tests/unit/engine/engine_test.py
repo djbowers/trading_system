@@ -8,4 +8,4 @@ class TestDataHandler(unittest.TestCase):
         self.engine = Engine()
 
     def test_for_error_on_start(self):
-        self.assertRaises(NotImplementedError, self.engine.start)
+        self.assertRaises(NotImplementedError, self.engine.run)

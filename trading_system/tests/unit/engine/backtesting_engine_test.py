@@ -14,12 +14,13 @@ class TestBacktestingEngine(unittest.TestCase):
         strategy = Mock()
         portfolio_handler = Mock()
         execution_handler = Mock()
+        report_handler = Mock()
 
-        self.engine = engine.BacktestingEngine(events, data_handler, strategy,
-                                               portfolio_handler, execution_handler)
+        self.engine = engine.BacktestingEngine(events, data_handler, strategy, portfolio_handler,
+                                               execution_handler, report_handler)
 
     def test_engine_starts(self):
-        self.engine.start()
+        self.engine.run()
 
 
 class DataHandlerMock(DataHandler):

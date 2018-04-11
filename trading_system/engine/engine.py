@@ -10,7 +10,7 @@ class Engine:
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def start(self):
+    def run(self):
         """
         Start the trading engine.
         """

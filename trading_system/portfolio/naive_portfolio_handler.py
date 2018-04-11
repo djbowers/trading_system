@@ -1,7 +1,7 @@
 import pandas as pd
 
 from trading_system.event import OrderEvent, SignalEvent, FillEvent, EventQueue, MarketEvent
-from trading_system.performance import create_drawdowns, create_sharpe_returns
+
 from .portfolio_handler import PortfolioHandler
 
 
@@ -36,46 +36,14 @@ class NaivePortfolioHandler(PortfolioHandler):
         self._update_current_positions(event)
         self._update_current_holdings(event)
 
-    def update_portfolio(self, event: MarketEvent):
+    def update_on_market(self, event: MarketEvent):
         """
-        Adds a new record to the all positions list for the current
-        market data bar. This reflects the PREVIOUS bar, i.e. all
-        current market data at this stage is known (OLHCVI).
+        Adds a timeindex to the portfolio current positions and holdings and moves them
+        into the all positions and holdings objects, thereby allowing for new
+        current positions and holdings with the new market data from the MarketEvent
         """
-        symbol = list(event.symbol_data.keys())[0]
-        bars = event.symbol_data[symbol]
-        timeindex = bars[0].time
-
-        self._update_all_positions(event.symbol_data, timeindex)
-        self._update_all_holdings(event.symbol_data, timeindex)
-
-    def create_equity_curve(self):
-        """
-        Creates a pandas DataFrame from the all_holdings list of dictionaries.
-        """
-        curve = pd.DataFrame(self.portfolio.all_holdings)
-        curve.set_index('datetime', inplace=True)
-        curve['returns'] = curve['total'].pct_change()
-        curve['equity'] = (1.0+curve['returns']).cumprod()
-        self.portfolio.equity_curve = curve
-
-    def output_summary_stats(self):
-        """
-        Creates a list of summary statistics for the portfolio such as
-        Sharpe Ratio and drawdown information.
-        """
-        total_return = self.portfolio.equity_curve['equity'][-1]
-        returns = self.portfolio.equity_curve['returns']
-        pnl = self.portfolio.equity_curve['equity']
-
-        sharpe_ratio = create_sharpe_returns(returns)
-        max_dd, dd_duration = create_drawdowns(pnl)
-
-        stats = [("Total Return", "%0.2f%%" % ((total_return - 1.0) * 100.0)),
-                 ("Sharpe Ratio", "%0.2f" % sharpe_ratio),
-                 ("Max Drawdown", "%0.2f%%" % (max_dd * 100.0)),
-                 ("Drawdown Duration", "%d" % dd_duration)]
-        return stats
+        self._update_all_positions(event.symbol_data, event.timeindex)
+        self._update_all_holdings(event.symbol_data, event.timeindex)
 
     def _generate_naive_order(self, event: SignalEvent):
         """

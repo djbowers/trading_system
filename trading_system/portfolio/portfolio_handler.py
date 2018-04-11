@@ -25,3 +25,12 @@ class PortfolioHandler:
         Updates the portfolio current positions and holdings from a FillEvent.
         """
         raise NotImplementedError
+
+    @abstractmethod
+    def update_on_market(self, event: FillEvent):
+        """
+        Moves current positions and current holdings into all positions
+        and all holdings, respectively, adding the timeindex and market
+        value from the market event.
+        """
+        raise NotImplementedError
