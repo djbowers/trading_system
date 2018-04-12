@@ -15,7 +15,7 @@ class BuyAndHoldStrategy(Strategy):
     """
 
     def __init__(self, events: EventQueue, symbols):
-        self.event_queue = events
+        self.events = events
         self.symbols = symbols
         self.bought = {}
         for symbol in self.symbols:
@@ -30,5 +30,5 @@ class BuyAndHoldStrategy(Strategy):
         for symbol, bars in event.symbol_data.items():
             if not self.bought[symbol]:
                 signal = SignalEvent(bars[-1].symbol, bars[-1].time, 'LONG')
-                self.event_queue.add_event(signal)
+                self.events.add_event(signal)
                 self.bought[symbol] = True

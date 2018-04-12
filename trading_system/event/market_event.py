@@ -4,6 +4,9 @@ from .event import Event, EventType
 class MarketEvent(Event):
     """
     Handles the event of receiving a new market update with corresponding bars.
+
+    The symbol_data dict is used to map a symbol to a list of bars (which
+    may only contain a single bar).
     """
 
     def __init__(self, symbol_data):
