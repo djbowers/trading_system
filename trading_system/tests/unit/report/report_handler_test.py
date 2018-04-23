@@ -1,7 +1,7 @@
 import unittest
 
 from config import TestingConfig
-from trading_system.portfolio import Portfolio
+from trading_system.portfolio import NaivePortfolio
 from trading_system.report import ReportHandler
 
 
@@ -10,7 +10,7 @@ class TestReportHandler(unittest.TestCase):
     def setUp(self):
         self.symbols = TestingConfig.SYMBOLS
         self.start_date = '2018-02-28 00:00:00'
-        self.portfolio = Portfolio(self.symbols, self.start_date)
+        self.portfolio = NaivePortfolio(self.symbols, self.start_date)
         self.portfolio.all_holdings = [
             {'datetime': '0', 'cash': 100000.0, 'BTC':     0.0, 'total': 100000.0},
             {'datetime': '1', 'cash':  90000.0, 'BTC': 10000.0, 'total': 100000.0},

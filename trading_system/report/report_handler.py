@@ -1,6 +1,6 @@
 import pandas as pd
 
-from trading_system.portfolio import Portfolio
+from trading_system.portfolio import NaivePortfolio
 from .performance import create_drawdowns, create_sharpe_returns
 from .report import Report
 
@@ -11,7 +11,7 @@ class ReportHandler:
     data in the Portfolio structure.
     """
 
-    def __init__(self, portfolio: Portfolio):
+    def __init__(self, portfolio: NaivePortfolio):
         self.portfolio = portfolio
 
     def generate_report(self) -> Report:

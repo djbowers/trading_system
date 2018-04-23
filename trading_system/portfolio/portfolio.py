@@ -1,28 +1,71 @@
+from decimal import Decimal
+from typing import Dict
+
+from trading_system.event import FillEvent, MarketEvent
+from trading_system.position import Position, DOLLAR, CRYPTO
+
+
 class Portfolio:
-    """
-    The Portfolio data structure contains all of the financial portfolio data
-    for the current trading session.
 
-    The current positions and current holdings represent data for the most recent
-    market information. The all positions and all holdings represent snapshots of
-    the portfolio at a point in time specified by the datetime.
-    """
+    def __init__(self, cash):
+        self._positions: Dict[Position] = {}
+        self._init_cash = Decimal(cash).quantize(DOLLAR)
 
-    def __init__(self, symbols, start_date, initial_capital=100000.0):
-        self.start_date = start_date
-        self.initial_capital = initial_capital
+    def update_market_value(self, market: MarketEvent):
+        for symbol, bars in market.symbol_data.items():
+            latest_bar = bars[-1]
+            self._positions[symbol].update_market_value(latest_bar)
 
-        self.current_positions = {symbol: 0 for symbol in symbols}
+    def add_new_fill(self, fill: FillEvent):
+        if fill.symbol not in self._positions.keys():
+            self._positions[fill.symbol] = Position(fill)
+        else:
+            self._positions[fill.symbol].add_new_fill(fill)
 
-        self.all_positions = [
-            dict({'datetime': self.start_date}, **self.current_positions)
-        ]
+    # Portfolio Value
 
-        self.current_holdings = dict({'cash': self.initial_capital,
-                                      'fees': 0.0,
-                                      'total': self.initial_capital},
-                                     **{symbol: 0.0 for symbol in symbols})
+    @property
+    def cash(self):
+        return (self._init_cash - self.cost_basis).quantize(DOLLAR)
 
-        self.all_holdings = [
-            dict({'datetime': self.start_date}, **self.current_holdings)
-        ]
+    @property
+    def market_value(self):
+        return Decimal(
+            sum([position.market_value for position in self._positions.values()])
+        ).quantize(DOLLAR)
+
+    @property
+    def equity(self):
+        return (self.cash + self.market_value).quantize(DOLLAR)
+
+    # Tax Accounting
+
+    @property
+    def fees(self):
+        return Decimal(
+            sum([position.fees for position in self._positions.values()])
+        ).quantize(DOLLAR)
+
+    @property
+    def cost_basis(self):
+        return Decimal(
+            sum([position.cost_basis for position in self._positions.values()])
+        ).quantize(DOLLAR)
+
+    # P&L Calculations
+
+    @property
+    def total_pnl(self):
+        return (self.realized_pnl + self.unrealized_pnl).quantize(DOLLAR)
+
+    @property
+    def realized_pnl(self):
+        return Decimal(
+            sum([position.realized_pnl for position in self._positions.values()])
+        ).quantize(DOLLAR)
+
+    @property
+    def unrealized_pnl(self):
+        return Decimal(
+            sum([position.unrealized_pnl for position in self._positions.values()])
+        ).quantize(DOLLAR)

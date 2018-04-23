@@ -7,7 +7,7 @@ from trading_system.data import GDAXCSVDataHandler
 from trading_system.engine import BacktestingEngine
 from trading_system.event import EventQueue
 from trading_system.execution import SimulatedExecutionHandler
-from trading_system.portfolio import NaivePortfolioHandler, Portfolio
+from trading_system.portfolio import NaivePortfolioHandler, NaivePortfolio
 from trading_system.strategy import BuyAndHoldStrategy
 from trading_system.report import ReportHandler
 
@@ -17,7 +17,7 @@ def run(config: Config = DevelopmentConfig()):
     csv_dir = config.DATA_DIR
     symbols = config.SYMBOLS
     start_date = datetime.utcnow()
-    portfolio = Portfolio(symbols, start_date)
+    portfolio = NaivePortfolio(symbols, start_date)
 
     data_handler = GDAXCSVDataHandler(events, symbols, csv_dir)
     strategy = BuyAndHoldStrategy(events, symbols)

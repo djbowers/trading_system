@@ -156,7 +156,10 @@ class Position:
 
     @property
     def realized_pnl(self):
-        return ((self.avg_sell_price - self.avg_buy_price) * self.qty_open).quantize(DOLLAR)
+        if self.avg_buy_price and self.avg_sell_price:
+            return ((self.avg_sell_price - self.avg_buy_price) * self.qty_open).quantize(DOLLAR)
+        else:
+            return Decimal("0")
 
     @property
     def unrealized_pnl(self):

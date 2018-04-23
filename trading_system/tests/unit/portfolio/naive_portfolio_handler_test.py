@@ -1,11 +1,9 @@
 import unittest
 
-import pandas as pd
-
 from config import TestingConfig
 from trading_system.data import PriceBar
 from trading_system.event import EventQueue, SignalEvent, FillEvent, MarketEvent, EventType
-from trading_system.portfolio import NaivePortfolioHandler, Portfolio
+from trading_system.portfolio import NaivePortfolioHandler, NaivePortfolio
 
 
 class TestNaivePortfolioHandler(unittest.TestCase):
@@ -14,7 +12,7 @@ class TestNaivePortfolioHandler(unittest.TestCase):
         self.events = EventQueue()
         self.symbols = TestingConfig.SYMBOLS
         self.start_date = '2018-02-28 00:00:00'
-        self.portfolio = Portfolio(self.symbols, self.start_date)
+        self.portfolio = NaivePortfolio(self.symbols, self.start_date)
         self.portfolio_handler = NaivePortfolioHandler(self.events, self.portfolio)
 
     def test_that_update_on_signal_adds_order_event(self):

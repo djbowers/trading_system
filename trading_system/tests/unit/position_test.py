@@ -47,11 +47,7 @@ class TestLongPosition(unittest.TestCase):
         self.assertEqual(self.position.qty_open, Decimal("30"))
 
     def test_realized_pnl(self):
-        self.assertEqual(self.position.realized_pnl, Decimal("-10000"))
-
-    def test_realized_pnl_with_second_fill(self):
-        self.position.add_new_fill(self.second_fill)
-        self.assertEqual(self.position.realized_pnl, Decimal("-30000"))
+        self.assertEqual(self.position.realized_pnl, Decimal("0"))
 
     def test_update_market_value_with_invalid_symbol(self):
         price_bar = PriceBar("0:00", 0, 0, 0, 0, 0, 'INVALID')
