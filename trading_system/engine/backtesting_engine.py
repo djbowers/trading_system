@@ -37,16 +37,16 @@ class BacktestingEngine(Engine):
     def _handle_event(self, event):
         if event.type == EventType.MARKET:
             self.strategy.calculate_signals(event)
-            self.portfolio_handler.update_on_market(event)
+            self.portfolio_handler.update_portfolio_on_market(event)
 
         elif event.type == EventType.SIGNAL:
-            self.portfolio_handler.update_on_signal(event)
+            self.portfolio_handler.generate_order_from_signal(event)
 
         elif event.type == EventType.ORDER:
             self.execution_handler.execute_order(event)
 
         elif event.type == EventType.FILL:
-            self.portfolio_handler.update_on_fill(event)
+            self.portfolio_handler.update_portfolio_on_fill(event)
 
     def _report_results(self):
         print(self.report_handler.generate_report())

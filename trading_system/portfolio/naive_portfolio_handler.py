@@ -22,23 +22,25 @@ class NaivePortfolioHandler(PortfolioHandler):
         self.events = events
         self.portfolio = portfolio
 
-    def update_on_signal(self, event: SignalEvent):
+    def generate_order_from_signal(self, event: SignalEvent):
         """
         Acts on a SignalEvent to generate new orders based on the portfolio logic.
         """
         order_event = self._generate_naive_order(event)
         self.events.add_event(order_event)
 
-    def update_on_fill(self, event: FillEvent):
+    def update_portfolio_on_fill(self, event: FillEvent):
         """
         Updates the portfolio current positions and holdings from a FillEvent.
         """
         self._update_current_positions(event)
         self._update_current_holdings(event)
 
-    def update_on_market(self, event: MarketEvent):
+    def update_portfolio_on_market(self, event: MarketEvent):
         """
-        Adds a timeindex to the portfolio current positions and holdings and moves them
+        Update the portfolio with new market data.
+
+        This adds a timeindex to the portfolio current positions and holdings and moves them
         into the all positions and holdings objects, thereby allowing for new
         current positions and holdings with the new market data from the MarketEvent
         """
@@ -47,9 +49,8 @@ class NaivePortfolioHandler(PortfolioHandler):
 
     def _generate_naive_order(self, event: SignalEvent):
         """
-        Simply transacts an OrderEvent object as a constant quantity
-        sizing of the signal object, without risk management or
-        position sizing considerations.
+        Simply transacts an OrderEvent object as a constant quantity sizing of the
+        signal object, without risk management or position sizing considerations.
         """
         order = None
 
@@ -75,13 +76,13 @@ class NaivePortfolioHandler(PortfolioHandler):
         """
         Takes a FillEvent object and updates the position matrix to reflect the new position.
         """
-        self.portfolio.current_positions[event.symbol] += event.fill_dir * event.quantity
+        self.portfolio.current_positions[event.symbol] += event.polarity * event.quantity
 
     def _update_current_holdings(self, event: FillEvent):
         """
         Takes a FillEvent object and updates the holdings matrix to reflect the holdings value.
         """
-        cost = event.fill_dir * event.fill_cost * event.quantity
+        cost = event.polarity * event.price * event.quantity
 
         self.portfolio.current_holdings[event.symbol] += cost
         self.portfolio.current_holdings['fees'] += event.fee
@@ -89,6 +90,10 @@ class NaivePortfolioHandler(PortfolioHandler):
         self.portfolio.current_holdings['total'] -= (cost + event.fee)
 
     def _update_all_positions(self, symbol_data, timeindex):
+        """
+        Add a timeindex to the portfolio current positions and add it as a new entry
+        in the portfolio all positions list.
+        """
         new_positions = {'datetime': timeindex}
         for symbol in symbol_data.keys():
             new_positions[symbol] = self.portfolio.current_positions[symbol]
@@ -96,7 +101,8 @@ class NaivePortfolioHandler(PortfolioHandler):
 
     def _update_all_holdings(self, symbol_data, timeindex):
         """
-        Updates holdings using the close price of the bar as the current market value.
+        Updates holdings the same way as positions, using the close price of the bar
+        as the current market value.
         """
         newest_holdings = {'datetime': timeindex, 'cash': self.portfolio.current_holdings['cash'],
                            'fees': self.portfolio.current_holdings['fees'],

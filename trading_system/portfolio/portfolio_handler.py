@@ -12,7 +12,7 @@ class PortfolioHandler:
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def update_on_signal(self, event: SignalEvent):
+    def generate_order_from_signal(self, event: SignalEvent):
         """
         Acts on a SignalEvent to generate new orders based on the portfolio logic,
         producing an OrderEvent.
@@ -20,14 +20,14 @@ class PortfolioHandler:
         raise NotImplementedError
 
     @abstractmethod
-    def update_on_fill(self, event: FillEvent):
+    def update_portfolio_on_fill(self, event: FillEvent):
         """
         Updates the portfolio current positions and holdings from a FillEvent.
         """
         raise NotImplementedError
 
     @abstractmethod
-    def update_on_market(self, event: FillEvent):
+    def update_portfolio_on_market(self, event: FillEvent):
         """
         Moves current positions and current holdings into all positions
         and all holdings, respectively, adding the timeindex and market
