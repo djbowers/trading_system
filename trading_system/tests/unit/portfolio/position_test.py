@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from trading_system.data import PriceBar
 from trading_system.event import FillEvent
-from trading_system.position import Position
+from trading_system.portfolio import Position
 
 
 class TestLongPosition(unittest.TestCase):

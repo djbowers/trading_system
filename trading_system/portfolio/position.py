@@ -32,7 +32,7 @@ class Position:
         Then calculate the initial values and finally update the market
         value of the position.
         """
-        self._fills = [fill]
+        self.fills = [fill]
 
         self.symbol = fill.symbol
         self.exchange = fill.exchange
@@ -56,7 +56,7 @@ class Position:
         data will be recalculated automatically upon adding the fill.
         """
         if fill.symbol == self.symbol and fill.exchange == self.exchange:
-            self._fills.append(fill)
+            self.fills.append(fill)
             self.est_exit_price = Decimal(fill.price).quantize(DOLLAR)
         else:
             raise ValueError("The fill event is for a different symbol or exchange than the position.")
@@ -92,11 +92,11 @@ class Position:
 
     @property
     def qty_bought(self):
-        return Decimal(sum([fill.quantity for fill in self._fills if fill.direction == "BUY"])).quantize(CRYPTO)
+        return Decimal(sum([fill.quantity for fill in self.fills if fill.direction == "BUY"])).quantize(CRYPTO)
 
     @property
     def qty_sold(self):
-        return Decimal(sum([fill.quantity for fill in self._fills if fill.direction == "SELL"])).quantize(CRYPTO)
+        return Decimal(sum([fill.quantity for fill in self.fills if fill.direction == "SELL"])).quantize(CRYPTO)
 
     @property
     def qty_open(self):
@@ -106,11 +106,11 @@ class Position:
 
     @property
     def total_buy_price(self):
-        return Decimal(sum([Decimal(fill.price) * Decimal(fill.quantity) for fill in self._fills if fill.direction == "BUY"])).quantize(DOLLAR)
+        return Decimal(sum([Decimal(fill.price) * Decimal(fill.quantity) for fill in self.fills if fill.direction == "BUY"])).quantize(DOLLAR)
 
     @property
     def total_sell_price(self):
-        return Decimal(sum([Decimal(fill.price) * Decimal(fill.quantity) for fill in self._fills if fill.direction == "SELL"])).quantize(DOLLAR)
+        return Decimal(sum([Decimal(fill.price) * Decimal(fill.quantity) for fill in self.fills if fill.direction == "SELL"])).quantize(DOLLAR)
 
     @property
     def avg_buy_price(self):
@@ -138,7 +138,7 @@ class Position:
 
     @property
     def fees(self):
-        return Decimal(sum([Decimal(fill.fee) for fill in self._fills])).quantize(DOLLAR)
+        return Decimal(sum([Decimal(fill.fee) for fill in self.fills])).quantize(DOLLAR)
 
     @property
     def cost_basis(self):

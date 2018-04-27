@@ -1,6 +1,5 @@
 import os
 from time import gmtime, strftime
-from typing import Dict, List
 
 import pandas as pd
 
@@ -32,8 +31,8 @@ class GDAXCSVDataHandler(DataHandler):
         else:
             raise AttributeError("No symbols were found.")
 
-        self.raw_symbol_data: Dict[str: pd.DataFrame] = {}
-        self.latest_symbol_data: Dict[str: List[PriceBar]] = {}
+        self.raw_symbol_data = {}
+        self.latest_symbol_data = {}
         self.continue_backtest = True
 
         self._open_convert_csv_files()

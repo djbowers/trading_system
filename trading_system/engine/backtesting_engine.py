@@ -49,4 +49,5 @@ class BacktestingEngine(Engine):
             self.portfolio_handler.update_portfolio_on_fill(event)
 
     def _report_results(self):
-        print(self.report_handler.generate_report())
+        # print(self.report_handler.generate_report())
+        print("Temporarily no reporting")

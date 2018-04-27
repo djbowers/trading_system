@@ -7,7 +7,7 @@ class SignalEvent(Event):
     This is received by a Portfolio object and acted upon.
     """
 
-    def __init__(self, symbol, datetime, signal_type):
+    def __init__(self, symbol, datetime, direction):
         """
         symbol: The ticker symbol, e.g. 'BTC'.
         datetime: The timestamp at which the signal was generated.
@@ -17,4 +17,4 @@ class SignalEvent(Event):
         self.type = EventType.SIGNAL
         self.symbol = symbol
         self.datetime = datetime
-        self.signal_type = signal_type
+        self.direction = direction

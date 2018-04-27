@@ -11,7 +11,7 @@ class MarketEvent(Event):
 
     def __init__(self, symbol_data):
         self.type = EventType.MARKET
-        self.symbol_data: dict = symbol_data
+        self.symbol_data = symbol_data
         self.timeindex = self._get_timeindex()
 
     def _get_timeindex(self):
