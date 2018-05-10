@@ -27,25 +27,29 @@ class PeriodBreakoutStrategy(Strategy):
         the date of strategy initialisation.
         """
 
-        ## get period high
-        high = get_period_high(total_candle_dict)
 
-        ## get period low
-        low = get_period_low(total_candle_dict)
+        for symbol, bars in event.symbol_data.items():
+            ## get period high
+            ## high will be TRUE or FALSE
+            high = get_period_high(bars)
 
-        if high == True:
-            ## breakout has occured, now == test_period high
-            ## create a long buy event
-            signal = SignalEvent(bars[-1].symbol, bars[-1].time, 'LONG')
-            self.events.add_event(signal)
-            self.bought[symbol] = True
+            ## get period low
+            ## low will be TRUE or FALSE
+            low = get_period_low(bars)
 
-        if low == True:
-            ## breakout has occured, now == test_period high
-            ## create a short buy event
-            signal = SignalEvent(bars[-1].symbol, bars[-1].time, 'SHORT')
-            self.events.add_event(signal)
-            self.bought[symbol] = True
+            if high == True:
+                ## breakout has occured, now == test_period high
+                ## create a long buy event
+                signal = SignalEvent(symbol, bars[-1].time, 'LONG')
+                self.events.add_event(signal)
+                self.bought[symbol] = True
+
+            if low == True:
+                ## breakout has occured, now == test_period high
+                ## create a short buy event
+                signal = SignalEvent(symbol, bars[-1].time, 'SHORT')
+                self.events.add_event(signal)
+                self.bought[symbol] = True
 
 
 
@@ -60,13 +64,13 @@ class PeriodBreakoutStrategy(Strategy):
         ## set results to 0
         results = False
         highest_price_in_dict = {'time':0,
-                        'price':0}
-        for symbol, bar in event.symbol_data.items():
-            """
-            loop 1 candle at a time and compare if current close price is higher
-            than last close price. End the loop with the highest close price as
-            a dict with the period.
-            """
+                                'price':0}
+        """
+        loop 1 candle at a time and compare if current close price is higher
+        than last close price. End the loop with the highest close price as
+        a dict with the period.
+        """
+        for bar in bars:
             if bar.close_price > highest_price_in_dict['price']:
                 highest_price_in_dict = {'time':bar.time_index,
                                 'price':bar.close_price}
@@ -98,16 +102,15 @@ class PeriodBreakoutStrategy(Strategy):
         lowest_price_in_dict = {'time':0,
                                 'price':9999999999999}
 
-        for symbol, bar in event.symbol_data.items():
-            """
-            loop 1 candle at a time and compare if current close price is higher
-            than last close price. End the loop with the highest close price as
-            a dict with the period.
-            """
-            if bar.close_price < lowest_price_in_dict['price']:
-                lowest_price_in_dict = {'time':bar.time_index,
-                                'price':bar.close_price}
-            now = bar
+        """
+        loop 1 candle at a time and compare if current close price is higher
+        than last close price. End the loop with the highest close price as
+        a dict with the period.
+        """
+        if bar.close_price < lowest_price_in_dict['price']:
+            lowest_price_in_dict = {'time':bar.time_index,
+                            'price':bar.close_price}
+        now = bar
 
 
         """
